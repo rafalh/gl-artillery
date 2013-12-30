@@ -1,0 +1,16 @@
+1) projekty sa realizowane jednoosobowo;
+2) mozna wczytywac tekstury i mapy wysokosci;
+3) nie mozna wczytywac modeli obiektow;
+4) srodowiskiem zdawania projektu sa uczelniane komputery w pracowni 313;
+5) mozna zglaszac wlasne tematy projektow (jest to zreszta bardzo mile widziane);
+6) liczba osob wybierajacych ten sam temat projektu powinna byc mozliwie najnizsza, przy czym w danej grupie laboratoryjnej musi wynosic maksymalnie 1;
+7) niektore tematy mozna rozdzielic -> np. wizualizacja silnika Wankla i wizualizacja silnika Diesela licza sie jako 2 osobne projekty;
+8) nie mozna stosowac wysokopoziomowych nakladek na OpenGL, a w szczegolnosci silnikow graficznych typu Ogre 3D albo Unity;
+9) nie mozna oddac projektu napisanego z uzyciem DirectX (niby oczywiste, ale takie pytania tez sie pojawialy);
+10) mozna stosowac biblioteki podpinajace OpenGL do systemu okien - domyslnie na laboratorium bedziemy uzywac GLUTa, u mnie dozwolone sa dodatkowo GLFW oraz FLTK;
+11) mozna uzywac bibliotek do ladowania tekstur (np. DevIL/OpenIL);
+12) mozna uzywac bibliotek matematycznych (np. GLM);
+13) uzycie innych bibliotek musi byc konsultowane (np. Boosta dopuszczam, na SDL raczej patrze krzywym okiem);
+14) projekt musi byc napisany w C/C++;
+15) nie warto zaczynac pisania projektu zanim nie zaakceptuje mini-specyfikacji ktora Panstwo powinni mi przeslac po laboratorium;
+16) warto zaczac projekt wczesniej niz dzien przed ostatecznym terminem oddania; warto tez dokladnie sie zastanowic nad wyborem tematu, bo jego zgranie z Panstwa mozliwosciami, predyspozycjami oraz zainteresowaniami ma wedle moich obserwacji zauwazalny wplyw na motywacje do jego zaczecia i przede wszystkim skonczenia; 
