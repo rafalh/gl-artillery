@@ -38,7 +38,7 @@ class CSceneMgr
         CSceneNode *m_pSkybox;
         CCamera *m_pCamera;
         CRenderer *m_pRenderer;
-        GLuint m_ProgramNoLight, m_ProgramLight;
+        GLuint m_SkyboxProgram;
 };
 
 #endif // CSCENEMGR_H

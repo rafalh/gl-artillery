@@ -1,5 +1,6 @@
 #include "CSkybox.h"
 #include "CTextureMgr.h"
+#include "CShadersMgr.h"
 #include "CRenderer.h"
 #include "utils.h"
 
@@ -91,6 +92,7 @@ CSkybox::~CSkybox()
 
 void CSkybox::render()
 {
+    GLuint OldProgram = m_pRenderer->setProgram(CShadersMgr::getInstance().get("skybox"));
     m_pRenderer->setModelTransform(glm::mat4(1.0f), true);
     
     for(unsigned i = 0; i < 6; ++i)
@@ -100,4 +102,6 @@ void CSkybox::render()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         m_pMesh->renderPart(i * 6, 6);
     }
+    
+    m_pRenderer->setProgram(OldProgram);
 }

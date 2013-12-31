@@ -138,7 +138,7 @@ float snoise(vec4 v)
 
 void main()
 {
-	float noise = 1.0f - clamp(snoise(vec4(FragmentPos*3.0f, Time)), 0.0f, 1.0f);
-	float t = 0.6f + noise * 0.6f;
+	float noise = clamp(snoise(vec4(FragmentPos*3.0f, Time)), 0.0f, 1.0f);
+	float t = 0.8f + noise * 0.4f;
 	PixelColor = vec4(clamp(t * FragmentColor.rgb, 0.0f, 1.0f), FragmentColor.a);
 }

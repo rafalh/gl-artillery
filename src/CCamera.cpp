@@ -18,8 +18,7 @@ CCamera::CCamera():
     memset(&m_Controls, 0, sizeof(m_Controls));
     
     m_matView = glm::mat4(1.0f);
-    m_matProj = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
-    //m_matProj = glm::scale(m_matProj, glm::vec3(1.0f, 1.0f, -1.0f));
+    m_matProj = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 1000.0f);
 }
 
 void CCamera::setRotation(float fYaw, float fPitch)

@@ -9,6 +9,7 @@
 #include "CShield.h"
 #include "CCamera.h"
 #include "CInputHandler.h"
+#include "CShadersMgr.h"
 #include "utils.h"
 
 CApp::CApp()
@@ -42,18 +43,12 @@ void CApp::start()
 {
     CLogger::getInstance().info("Starting animation!\n");
     
-    // Compile OpenGL shaders
-    glGetError();
-	GLuint Program = m_pRenderer->loadShaders("shaders/VertexShader.glsl", "shaders/FragmentShader.glsl");
-	CHECK_GL_ERROR();
-    
-    // Set VS and FS
-    m_pRenderer->setProgram(Program);
+    // Set main shader program
+    m_pRenderer->setProgram(CShadersMgr::getInstance().get("main"));
     
     while(!m_pRenderer->isClosed())
     {
-        // Clear the screen
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+        m_pRenderer->clear();
         
         m_pSceneMgr->render();
         
@@ -63,9 +58,6 @@ void CApp::start()
         // new frame has been rendered
         m_pFpsCounter->onFrame();
     }
-    
-    if(Program)
-        glDeleteProgram(Program);
 }
 
 void CApp::onFpsChange()

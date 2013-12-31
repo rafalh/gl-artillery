@@ -12,10 +12,11 @@ class CRenderer
         CRenderer(unsigned w, unsigned h);
         virtual ~CRenderer();
         void run();
-        GLuint loadShaders(const char *vertexShaderPath, const char *fragmentShaderPath);
+        
         void setTitle(const char *pszTitle);
         void setModelTransform(const glm::mat4 &ModelMat, bool bSkybox = false);
         void setTexture(GLuint Texture);
+        void clear();
 
         void setViewMatrix(const glm::mat4 &View)
         {
@@ -78,15 +79,12 @@ class CRenderer
         CInputHandler *m_pInputHandler;
         GLuint m_Program;
         glm::mat4 m_ViewMatrix, m_ProjMatrix;
-
-        static void glfwErrorCallback(int iErrorNum, const char *pszDescription);
         
-        //CImage *getCurrentFrame();
+        static void glfwErrorCallback(int iErrorNum, const char *pszDescription);
         static void onKey(GLFWwindow *pWindow, int Key, int Scancode, int Action, int Mods);
-        void updateCamera();
+        void handleCursorMove();
 };
 
 DEFINE_EXCEPTION_CLASS(COpenGLException);
-DEFINE_EXCEPTION_CLASS(COpenGLShaderException);
 
 #endif // COPENGLDRIVER_H

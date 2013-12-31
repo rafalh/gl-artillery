@@ -3,10 +3,11 @@
 #include "CRenderer.h"
 #include "CGeometryBuilder.h"
 #include "CTextureMgr.h"
+#include "CShadersMgr.h"
 #include "CMesh.h"
 
 CShield::CShield(CRenderer *pRenderer):
-    m_pRenderer(pRenderer), m_pMesh(nullptr), m_Program(0)
+    m_pRenderer(pRenderer), m_pMesh(nullptr)
 {
     m_pMesh = new CMesh;
     CGeometryBuilder Builder;
@@ -20,25 +21,19 @@ CShield::CShield(CRenderer *pRenderer):
 CShield::~CShield()
 {
     delete m_pMesh;
-    if(m_Program)
-        glDeleteProgram(m_Program);
 }
 
 void CShield::render()
 {
-    if(!m_Program)
-        m_Program = m_pRenderer->loadShaders("shaders/shield.vs.glsl", "shaders/shield.fs.glsl");
-    GLuint OldProgram = m_pRenderer->setProgram(m_Program);
+    GLuint OldProgram = m_pRenderer->setProgram(CShadersMgr::getInstance().get("shield"));
     
     m_pRenderer->setModelTransform(m_Transform);
     m_pRenderer->setDoubleSided(true);
-    m_pRenderer->setTexture(CTextureMgr::getInstance().get("textures/test.png"));
+    //m_pRenderer->setTexture(CTextureMgr::getInstance().get("textures/test.png"));
     m_pRenderer->setProgramUniform("Time", glfwGetTime());
     
-    glDepthMask(GL_FALSE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
     
     m_pMesh->render();
     

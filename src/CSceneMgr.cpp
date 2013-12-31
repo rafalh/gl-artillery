@@ -1,9 +1,10 @@
 #include "CSceneMgr.h"
 #include "CRenderer.h"
+#include "CShadersMgr.h"
 
 CSceneMgr::CSceneMgr(CRenderer *pRenderer):
     m_pSkybox(nullptr), m_pCamera(nullptr),
-    m_pRenderer(pRenderer), m_ProgramNoLight(0) {}
+    m_pRenderer(pRenderer), m_SkyboxProgram(0) {}
 
 CSceneMgr::~CSceneMgr()
 {
@@ -16,8 +17,8 @@ CSceneMgr::~CSceneMgr()
     delete m_pSkybox;
     delete m_pCamera;
     
-    if(m_ProgramNoLight)
-        glDeleteProgram(m_ProgramNoLight);
+    if(m_SkyboxProgram)
+        glDeleteProgram(m_SkyboxProgram);
 }
 
 void CSceneMgr::render()
@@ -26,15 +27,10 @@ void CSceneMgr::render()
     m_pRenderer->setViewMatrix(m_pCamera->getViewMatrix());
     m_pRenderer->setProgramUniform("EyePos", m_pCamera->getPosition());
     
-    if(!m_ProgramNoLight)
-        m_ProgramNoLight = m_pRenderer->loadShaders("shaders/SkyboxVS.glsl", "shaders/SkyboxFS.glsl");
-    
-    GLuint OldProgram = m_pRenderer->setProgram(m_ProgramNoLight);
     glDepthMask(GL_FALSE);
     if(m_pSkybox)
         m_pSkybox->render();
     glDepthMask(GL_TRUE);
-    m_pRenderer->setProgram(OldProgram);
     
     for(CSceneNode *pNode: m_Nodes)
         pNode->render();
