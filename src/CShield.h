@@ -13,9 +13,16 @@ class CShield: public CSceneNode
         ~CShield();
         void render();
         
+        bool isTransparent() const
+        {
+            return false;//true;
+        }
+        
     private:
         CRenderer *m_pRenderer;
         CMesh *m_pMesh;
+        glm::mat4 m_Transform;
+        GLuint m_Program;
 };
 
 #endif // CSHIELD_H

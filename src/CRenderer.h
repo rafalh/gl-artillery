@@ -53,7 +53,7 @@ class CRenderer
                 glfwGetWindowAttrib(m_pWnd, GLFW_ICONIFIED) == 0);
         }
         
-        void setProgram(GLuint Program);
+        GLuint setProgram(GLuint Program);
         
         GLuint getProgram()
         {
@@ -61,7 +61,9 @@ class CRenderer
         }
         
         void setProgramUniform(const char *pszName, const glm::vec3 &Value);
+        void setProgramUniform(const char *pszName, float Value);
         void setInputHandler(CInputHandler *pHandler);
+        void setDoubleSided(bool DoubleSided);
         
         void toggleWireframe()
         {

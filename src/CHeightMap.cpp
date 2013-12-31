@@ -6,34 +6,41 @@
 #include "CTextureMgr.h"
 #include "CMesh.h"
 
-CHeightMap::CHeightMap(CRenderer *pRenderer):
+CHeightMap::CHeightMap(const std::string &Path, CRenderer *pRenderer):
     m_pMesh(nullptr),
     m_Texture(0),
-    m_pRenderer(pRenderer) {}
+    m_pRenderer(pRenderer)
+{
+    m_pImage = new CImage(Path.c_str());
+}
 
 CHeightMap::~CHeightMap()
 {
     delete m_pMesh;
+    delete m_pImage;
 }
 
 void CHeightMap::build()
 {
+    if(!m_pImage) return;
+    
+    float StartTime = glfwGetTime();
+    
 	glm::vec3 MinPos(-100.0f, -11.0f, -100.0f);
 	glm::vec3 MaxPos(100.0f, -1.0f, 100.0f);
-
-    CImage Img("textures/hmap5.png");
-    int w = Img.getWidth();
-    int h = Img.getHeight();
+    
+    int w = m_pImage->getWidth();
+    int h = m_pImage->getHeight();
 
     m_pMesh = new CMesh;
-
+    
     unsigned VerticesCount = w * h;
     SVertex *pVertices = new SVertex[VerticesCount];
     for(int y = 0; y < h; ++y)
         for(int x = 0; x < w; ++x)
         {
             SVertex &Vert = pVertices[y * w + x];
-            RGBQUAD rgb = Img.getPixel(x, y);
+            RGBQUAD rgb = m_pImage->getPixel(x, y);
             
             float vx = MinPos.x + x * (MaxPos.x - MinPos.x) / (w - 1);
             float vy = MinPos.y + (rgb.rgbRed / 255.0f) * (MaxPos.y - MinPos.y);
@@ -75,7 +82,7 @@ void CHeightMap::build()
     m_pMesh->setVertices(pVertices, VerticesCount);
     delete[] pVertices;
     
-    unsigned IndicesCount = (Img.getWidth() - 1) * (Img.getHeight() - 1) * 2 * 3;
+    unsigned IndicesCount = (w - 1) * (h - 1) * 2 * 3;
     uint32_t *pIndices = new uint32_t[IndicesCount];
     unsigned i = 0;
     for(int y = 0; y < h - 1; ++y)
@@ -92,7 +99,12 @@ void CHeightMap::build()
     m_pMesh->setIndices(pIndices, IndicesCount);
     delete[] pIndices;
     
+    delete m_pImage;
+    m_pImage = nullptr;
+    
     m_Texture = CTextureMgr::getInstance().get("textures/desert.jpg");
+    
+    CLogger::getInstance().info("Heightmap built in %.2f seconds\n", glfwGetTime() - StartTime);
 }
 
 void CHeightMap::render()

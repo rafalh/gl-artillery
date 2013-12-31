@@ -10,6 +10,7 @@ layout(location = 3) in uint VertexClr;
 uniform mat4 MVP;
 
 // Output data - will be interpolated by Fragment Shader
+out vec3 FragmentPos;
 out vec2 FragmentUV;
 out vec4 FragmentColor;
 
@@ -17,6 +18,7 @@ void main()
 {
 	vec4 v = vec4(VertexPos, 1);
 	gl_Position = MVP * v;
+	FragmentPos = VertexPos;
 	FragmentUV = VertexUV;
 	FragmentColor.r = ((VertexClr >> 16u) & 0xFFu) / 255.0f;
 	FragmentColor.g = ((VertexClr >> 8u) & 0xFFu) / 255.0f;

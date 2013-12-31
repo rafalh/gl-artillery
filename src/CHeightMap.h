@@ -5,12 +5,13 @@
 
 class CRenderer;
 class CMesh;
+class CImage;
 
 class CHeightMap: public CSceneNode
 {
     public:
-        CHeightMap(CRenderer *pRenderer);
-        virtual ~CHeightMap();
+        CHeightMap(const std::string &Path, CRenderer *pRenderer);
+        ~CHeightMap();
         void build();
         void render();
         
@@ -18,6 +19,7 @@ class CHeightMap: public CSceneNode
         CMesh *m_pMesh;
         GLuint m_Texture;
         CRenderer *m_pRenderer;
+        CImage *m_pImage;
 };
 
 #endif // CHEIGHTMAP_H

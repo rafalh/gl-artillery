@@ -3,6 +3,7 @@
 #include "CLogger.h"
 #include "CException.h"
 #include "CInputHandler.h"
+#include "CTextureMgr.h"
 #include "utils.h"
 
 using namespace std;
@@ -54,8 +55,8 @@ CRenderer::CRenderer(unsigned w, unsigned h):
     // Use Z-Buffer
     glEnable(GL_DEPTH_TEST);
     
-    glEnable(GL_CULL_FACE);
-
+    setDoubleSided(false);
+    
 	// Set callbacks
 	glfwSetWindowUserPointer(m_pWnd, this);
 	glfwSetKeyCallback(m_pWnd, onKey);
@@ -76,12 +77,14 @@ void CRenderer::setTitle(const char *pszTitle)
     glfwSetWindowTitle(m_pWnd, pszTitle);
 }
 
-void CRenderer::setProgram(GLuint Program)
+GLuint CRenderer::setProgram(GLuint Program)
 {
+    GLuint OldProgram = m_Program;
     m_Program = Program;
     glUseProgram(m_Program);
     setModelTransform(glm::mat4(1.0f));
     CHECK_GL_ERROR();
+    return OldProgram;
 }
 
 void CRenderer::run()
@@ -287,6 +290,8 @@ void CRenderer::setTexture(GLuint Texture)
 {
     // Set texture
     glActiveTexture(GL_TEXTURE0);
+    if(!Texture)
+        Texture = CTextureMgr::getInstance().getWhite();
     glBindTexture(GL_TEXTURE_2D, Texture);
     GLuint Uniform = glGetUniformLocation(m_Program, "TextureSampler");
     glUniform1i(Uniform, 0);
@@ -298,6 +303,21 @@ void CRenderer::setProgramUniform(const char *pszName, const glm::vec3 &Value)
     GLuint Uniform = glGetUniformLocation(m_Program, pszName);
     glUniform3fv(Uniform, 1, glm::value_ptr(Value));
     CHECK_GL_ERROR();
+}
+
+void CRenderer::setProgramUniform(const char *pszName, float Value)
+{
+    GLuint Uniform = glGetUniformLocation(m_Program, pszName);
+    glUniform1f(Uniform, Value);
+    CHECK_GL_ERROR();
+}
+
+void CRenderer::setDoubleSided(bool DoubleSided)
+{
+    if(DoubleSided)
+        glDisable(GL_CULL_FACE);
+    else
+        glEnable(GL_CULL_FACE);
 }
 
 void CRenderer::updateCamera()

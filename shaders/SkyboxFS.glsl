@@ -2,14 +2,15 @@
 
 // Interpolated values from the Vertex Shaders
 in vec2 FragmentUV;
+in vec4 FragmentColor;
 
 // Ouput data
-out vec3 PixelColor;
+out vec4 PixelColor;
 
 // Values that stay constant for the whole rendering
 uniform sampler2D TextureSampler;
 
 void main()
 {
-	PixelColor = texture(TextureSampler, FragmentUV).rgb;
+	PixelColor = texture(TextureSampler, FragmentUV) * FragmentColor;
 }

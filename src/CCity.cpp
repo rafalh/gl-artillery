@@ -1,7 +1,6 @@
 #include "CCity.h"
 #include "CRenderer.h"
 #include "CMesh.h"
-#include "CTextureMgr.h"
 #include "CGeometryBuilder.h"
 
 CCity::CCity(CRenderer *pRenderer):
@@ -22,6 +21,7 @@ void CCity::build()
     unsigned CountX = 10, CountZ = 10;
     
     CGeometryBuilder GeomBuilder;
+    GeomBuilder.setColor(0xA0A0A0);
     
     float SizeX = (MaxPos.x - MinPos.x) / CountX * (2.0f/3.0f);
     float SizeZ = (MaxPos.z - MinPos.z) / CountZ * (2.0f/3.0f);
@@ -68,6 +68,6 @@ void CCity::render()
         build();
     
     m_pRenderer->setModelTransform(m_Transform);
-    m_pRenderer->setTexture(CTextureMgr::getInstance().getWhite());
+    m_pRenderer->setTexture(0);
     m_pMesh->render();
 }

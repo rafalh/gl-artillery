@@ -23,7 +23,7 @@ CApp::CApp()
     m_pSceneMgr->setCamera(pCam);
     
     m_pSceneMgr->setSkybox(new CSkybox("textures/nightsky_%s.png", m_pRenderer));
-    m_pSceneMgr->add(new CHeightMap(m_pRenderer));
+    m_pSceneMgr->add(new CHeightMap("textures/hmap5.png", m_pRenderer));
     m_pSceneMgr->add(new CCity(m_pRenderer));
     m_pSceneMgr->add(new CShield(m_pRenderer));
     

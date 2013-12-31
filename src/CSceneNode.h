@@ -8,6 +8,11 @@ class CSceneNode
         virtual ~CSceneNode();
         virtual void render() = 0;
         
+        virtual bool isTransparent() const
+        {
+            return false;
+        }
+        
     private:
         std::vector<CSceneNode*> m_Children;
 };

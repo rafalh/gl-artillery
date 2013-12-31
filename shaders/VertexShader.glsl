@@ -11,7 +11,7 @@ uniform mat4 MVP;
 uniform vec3 EyePos;
 
 // Output data - will be interpolated by Fragment Shader
-out vec3 FragmentColor;
+out vec4 FragmentColor;
 out vec3 FragmentNormal;
 out vec2 FragmentUV;
 out vec3 FragmentPos;
@@ -26,4 +26,5 @@ void main()
 	FragmentColor.r = ((VertexClr >> 16u) & 0xFFu) / 255.0f;
 	FragmentColor.g = ((VertexClr >> 8u) & 0xFFu) / 255.0f;
 	FragmentColor.b = ((VertexClr >> 0u) & 0xFFu) / 255.0f;
+	FragmentColor.a = ((VertexClr >> 24u) & 0xFFu) / 255.0f;
 }

@@ -14,7 +14,10 @@ class CSceneMgr
         
         void add(CSceneNode *pNode)
         {
-            m_Nodes.push_back(pNode);
+            if(pNode->isTransparent())
+                m_TransparentNodes.push_back(pNode);
+            else
+                m_Nodes.push_back(pNode);
         }
         
         void setCamera(CCamera *pCamera)
@@ -31,10 +34,11 @@ class CSceneMgr
     
     private:
         std::vector<CSceneNode*> m_Nodes;
+        std::vector<CSceneNode*> m_TransparentNodes;
         CSceneNode *m_pSkybox;
         CCamera *m_pCamera;
         CRenderer *m_pRenderer;
-        GLuint m_SkyboxProgram;
+        GLuint m_ProgramNoLight, m_ProgramLight;
 };
 
 #endif // CSCENEMGR_H

@@ -4,7 +4,7 @@
 struct SVertex
 {
     SVertex() {}
-    SVertex(const glm::vec3 &p, const glm::vec3 &n, const glm::vec2 &uv, uint32_t c = 0xFFFFFF):
+    SVertex(const glm::vec3 &p, const glm::vec3 &n, const glm::vec2 &uv = glm::vec2(0.0f, 0.0f), uint32_t c = 0xFFFFFF):
         Pos(p), Normal(n), UV(uv), Clr(c) {}
     
     glm::vec3 Pos;
