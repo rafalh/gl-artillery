@@ -10,10 +10,10 @@ void CGeometryBuilder::addQuad(const glm::vec3 &v1, const glm::vec3 &v2, const g
 {
     unsigned BaseIdx = m_Vertices.size();
     glm::vec3 Normal = glm::normalize(glm::cross(v3 - v2, v1 - v2));
-    m_Vertices.push_back(SVertex(v1, Normal, glm::vec2(), m_Color));
-    m_Vertices.push_back(SVertex(v2, Normal, glm::vec2(), m_Color));
-    m_Vertices.push_back(SVertex(v3, Normal, glm::vec2(), m_Color));
-    m_Vertices.push_back(SVertex(v4, Normal, glm::vec2(), m_Color));
+    m_Vertices.push_back(SVertex(v1, Normal, glm::vec2(0.0f, 0.0f), m_Color));
+    m_Vertices.push_back(SVertex(v2, Normal, glm::vec2(1.0f, 0.0f), m_Color));
+    m_Vertices.push_back(SVertex(v3, Normal, glm::vec2(1.0f, 1.0f), m_Color));
+    m_Vertices.push_back(SVertex(v4, Normal, glm::vec2(0.0f, 1.0f), m_Color));
     
     m_Indices.push_back(BaseIdx + 0);
     m_Indices.push_back(BaseIdx + 1);
@@ -148,4 +148,41 @@ void CGeometryBuilder::addFace(unsigned Offset, unsigned Index1, unsigned Index2
     m_Indices.push_back(Offset + Index1);
     m_Indices.push_back(Offset + Index2);
     m_Indices.push_back(Offset + Index3);
+}
+
+void CGeometryBuilder::addCylinder(unsigned Segments)
+{
+    unsigned BaseIdx = m_Vertices.size();
+    unsigned PrevIdx = BaseIdx;
+    
+    for(unsigned i = 0; i < Segments; ++i)
+    {
+        float Angle = (i / (float)Segments) * 2.0f * PI;
+        float x = cosf(Angle);
+        float z = sinf(Angle);
+        glm::vec3 Normal(x, 0.0f, z);
+        m_Vertices.push_back(SVertex(glm::vec3(x, -1.0f, z), Normal, glm::vec2(), m_Color));
+        m_Vertices.push_back(SVertex(glm::vec3(x,  1.0f, z), Normal, glm::vec2(), m_Color));
+        
+        if(i > 0)
+        {
+            m_Indices.push_back(PrevIdx);
+            m_Indices.push_back(PrevIdx + 1);
+            m_Indices.push_back(PrevIdx + 3);
+            
+            m_Indices.push_back(PrevIdx);
+            m_Indices.push_back(PrevIdx + 3);
+            m_Indices.push_back(PrevIdx + 2);
+            
+            PrevIdx += 2;
+        }
+    }
+    
+    m_Indices.push_back(PrevIdx);
+    m_Indices.push_back(PrevIdx + 1);
+    m_Indices.push_back(BaseIdx + 1);
+    
+    m_Indices.push_back(PrevIdx);
+    m_Indices.push_back(BaseIdx + 1);
+    m_Indices.push_back(BaseIdx);
 }

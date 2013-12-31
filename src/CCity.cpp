@@ -2,6 +2,7 @@
 #include "CRenderer.h"
 #include "CMesh.h"
 #include "CGeometryBuilder.h"
+#include "CTextureMgr.h"
 
 CCity::CCity(CRenderer *pRenderer):
     m_pMesh(nullptr), m_pRenderer(pRenderer)
@@ -68,6 +69,6 @@ void CCity::render()
         build();
     
     m_pRenderer->setModelTransform(m_Transform);
-    m_pRenderer->setTexture(0);
+    m_pRenderer->setTexture(CTextureMgr::getInstance().get("textures/concrete.jpg"));
     m_pMesh->render();
 }

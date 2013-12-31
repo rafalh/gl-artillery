@@ -8,8 +8,8 @@ class CGeometryBuilder
     public:
         CGeometryBuilder();
         void addQuad(const glm::vec3 &v1, const glm::vec3 &v2, const glm::vec3 &v3, const glm::vec3 &v4);
-        void addBox(const SVertex Vertices[8]);
         void addIcosphere(unsigned n = 0);
+        void addCylinder(unsigned Segments = 8);
         
         void setColor(uint32_t Color)
         {

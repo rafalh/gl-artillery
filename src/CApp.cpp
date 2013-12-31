@@ -3,13 +3,14 @@
 #include "CRenderer.h"
 #include "CLogger.h"
 #include "CSceneMgr.h"
+#include "CShadersMgr.h"
 #include "CHeightMap.h"
 #include "CCity.h"
 #include "CSkybox.h"
 #include "CShield.h"
+#include "CCannon.h"
 #include "CCamera.h"
 #include "CInputHandler.h"
-#include "CShadersMgr.h"
 #include "utils.h"
 
 CApp::CApp()
@@ -27,6 +28,7 @@ CApp::CApp()
     m_pSceneMgr->add(new CHeightMap("textures/hmap5.png", m_pRenderer));
     m_pSceneMgr->add(new CCity(m_pRenderer));
     m_pSceneMgr->add(new CShield(m_pRenderer));
+    m_pSceneMgr->add(new CCannon(m_pRenderer));
     
     m_pFpsCounter = new CFpsCounter;
     m_pFpsCounter->addObserver(this);
