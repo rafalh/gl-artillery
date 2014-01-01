@@ -12,7 +12,7 @@ CCannon::CCannon(CRenderer *pRenderer):
     CGeometryBuilder Builder;
     
     Builder.setColor(0xFF33AACC);
-    Builder.addCylinder(20);
+    Builder.addTube(1.0f, 1.5f, 20);
     
     m_pMesh = new CMesh;
     m_pMesh->setVertices(Builder.getVertices().data(), Builder.getVertices().size());

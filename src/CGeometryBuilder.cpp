@@ -150,39 +150,89 @@ void CGeometryBuilder::addFace(unsigned Offset, unsigned Index1, unsigned Index2
     m_Indices.push_back(Offset + Index3);
 }
 
-void CGeometryBuilder::addCylinder(unsigned Segments)
+void CGeometryBuilder::addCylinder(float Radius, bool Inside, unsigned Segments)
 {
-    unsigned BaseIdx = m_Vertices.size();
-    unsigned PrevIdx = BaseIdx;
+    unsigned PrevIdx = m_Vertices.size() + 2 * (Segments - 1);
     
     for(unsigned i = 0; i < Segments; ++i)
     {
         float Angle = (i / (float)Segments) * 2.0f * PI;
-        float x = cosf(Angle);
-        float z = sinf(Angle);
-        glm::vec3 Normal(x, 0.0f, z);
-        m_Vertices.push_back(SVertex(glm::vec3(x, -1.0f, z), Normal, glm::vec2(), m_Color));
-        m_Vertices.push_back(SVertex(glm::vec3(x,  1.0f, z), Normal, glm::vec2(), m_Color));
+        glm::vec3 Pos(cosf(Angle), 0.0f, sinf(Angle));
+        glm::vec3 Normal = Inside ? -Pos : Pos;
+        Pos *= Radius;
         
-        if(i > 0)
+        unsigned CurIdx = m_Vertices.size();
+        m_Vertices.push_back(SVertex(glm::vec3(Pos.x, -1.0f, Pos.z), Normal, glm::vec2(), m_Color));
+        m_Vertices.push_back(SVertex(glm::vec3(Pos.x,  1.0f, Pos.z), Normal, glm::vec2(), m_Color));
+        
+        if(!Inside)
         {
             m_Indices.push_back(PrevIdx);
             m_Indices.push_back(PrevIdx + 1);
-            m_Indices.push_back(PrevIdx + 3);
+            m_Indices.push_back(CurIdx + 1);
             
             m_Indices.push_back(PrevIdx);
-            m_Indices.push_back(PrevIdx + 3);
-            m_Indices.push_back(PrevIdx + 2);
-            
-            PrevIdx += 2;
+            m_Indices.push_back(CurIdx + 1);
+            m_Indices.push_back(CurIdx);
         }
+        else
+        {
+            m_Indices.push_back(PrevIdx + 1);
+            m_Indices.push_back(PrevIdx);
+            m_Indices.push_back(CurIdx + 1);
+            
+            m_Indices.push_back(PrevIdx);
+            m_Indices.push_back(CurIdx);
+            m_Indices.push_back(CurIdx + 1);
+        }
+        
+        PrevIdx = CurIdx;
     }
+}
+
+void CGeometryBuilder::addTube(float RadiusIn, float RadiusOut, unsigned Segments)
+{
+    addCylinder(RadiusIn, true, Segments);
+    addCylinder(RadiusOut, false, Segments);
     
-    m_Indices.push_back(PrevIdx);
-    m_Indices.push_back(PrevIdx + 1);
-    m_Indices.push_back(BaseIdx + 1);
+    glm::vec3 NormalTop(0.0f, 1.0f, 0.0f);
+    glm::vec3 NormalBottom(0.0f, -1.0f, 0.0f);
     
-    m_Indices.push_back(PrevIdx);
-    m_Indices.push_back(BaseIdx + 1);
-    m_Indices.push_back(BaseIdx);
+    unsigned PrevIdx = m_Vertices.size() + 4 * (Segments - 1);
+    
+    for(unsigned i = 0; i < Segments; ++i)
+    {
+        float Angle = (i / (float)Segments) * 2.0f * PI;
+        glm::vec3 Pos(cosf(Angle), 0.0f, sinf(Angle));
+        glm::vec3 PosTopIn(Pos.x * RadiusIn, 1.0f, Pos.z * RadiusIn);
+        glm::vec3 PosTopOut(Pos.x * RadiusOut, 1.0f, Pos.z * RadiusOut);
+        glm::vec3 PosBottomIn(Pos.x * RadiusIn, -1.0f, Pos.z * RadiusIn);
+        glm::vec3 PosBottomOut(Pos.x * RadiusOut, -1.0f, Pos.z * RadiusOut);
+        
+        unsigned CurIdx = m_Vertices.size();
+        m_Vertices.push_back(SVertex(PosTopIn, NormalTop, glm::vec2(), m_Color));
+        m_Vertices.push_back(SVertex(PosTopOut, NormalTop, glm::vec2(), m_Color));
+        m_Vertices.push_back(SVertex(PosBottomIn, NormalBottom, glm::vec2(), m_Color));
+        m_Vertices.push_back(SVertex(PosBottomOut, NormalBottom, glm::vec2(), m_Color));
+        
+        // Top
+        m_Indices.push_back(CurIdx + 0);
+        m_Indices.push_back(CurIdx + 1);
+        m_Indices.push_back(PrevIdx + 1);
+        
+        m_Indices.push_back(CurIdx + 0);
+        m_Indices.push_back(PrevIdx + 1);
+        m_Indices.push_back(PrevIdx + 0);
+        
+        // Bottom
+        m_Indices.push_back(CurIdx + 3);
+        m_Indices.push_back(CurIdx + 2);
+        m_Indices.push_back(PrevIdx + 3);
+        
+        m_Indices.push_back(CurIdx + 2);
+        m_Indices.push_back(PrevIdx + 2);
+        m_Indices.push_back(PrevIdx + 3);
+        
+        PrevIdx = CurIdx;
+    }
 }
