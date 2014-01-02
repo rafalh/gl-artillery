@@ -29,7 +29,7 @@ void CShield::render()
     
     m_pRenderer->setModelTransform(m_Transform);
     m_pRenderer->setDoubleSided(true);
-    //m_pRenderer->setTexture(CTextureMgr::getInstance().get("textures/test.png"));
+    m_pRenderer->setTexture(0);
     m_pRenderer->setProgramUniform("Time", glfwGetTime());
     
     glEnable(GL_BLEND);

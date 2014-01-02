@@ -15,8 +15,12 @@ class CCannon: public CSceneNode
         
     private:
         CRenderer *m_pRenderer;
-        CMesh *m_pMesh;
+        CMesh *m_pLauncherMesh;
+        CMesh *m_pBaseMesh;
         glm::mat4 m_Transform;
+        
+        void prepareBase();
+        void prepareLauncher();
 };
 
 #endif // CCANNON_H
