@@ -19,6 +19,8 @@ CApp::CApp()
     m_pSceneMgr = new CSceneMgr(m_pRenderer);
     
     CCamera *pCam = new CCamera();
+    pCam->setPosition(glm::vec3(60.0f, 0.0f, 60.0f));
+    
     CInputHandler *pInputHandler = new CInputHandler(m_pRenderer);
     pInputHandler->setCamera(pCam);
     m_pRenderer->setInputHandler(pInputHandler);

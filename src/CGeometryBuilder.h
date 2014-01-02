@@ -17,7 +17,21 @@ class CGeometryBuilder
         void addVertices(const std::vector<SVertex> &Vertices, const std::vector<uint16_t> &Indices);
         void addBox();
         void addBox(const glm::vec3 Vertices[8]);
+        void addPolygon(const glm::vec3 Vertices[], unsigned Count);
+        void addPolygon(const glm::vec3 Vertices[], unsigned VertCount, const uint16_t Indices[], unsigned IndCount);
         CMesh *createMesh();
+        void switchVerticesOrder();
+        
+        void removeAllVertices()
+        {
+            m_Vertices.clear();
+            m_Indices.clear();
+        }
+        
+        uint32_t getColor() const
+        {
+            return m_Color;
+        }
         
         void setColor(uint32_t Color)
         {

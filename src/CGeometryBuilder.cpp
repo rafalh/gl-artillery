@@ -311,10 +311,55 @@ void CGeometryBuilder::addBox(const glm::vec3 Vertices[8])
     addQuad(Vertices[0], Vertices[3], Vertices[7], Vertices[4]);
 }
 
+void CGeometryBuilder::addPolygon(const glm::vec3 Positions[], unsigned Count)
+{
+    unsigned BaseIdx = m_Vertices.size();
+    glm::vec3 Normal = glm::normalize(glm::cross(Positions[2] - Positions[1], Positions[0] - Positions[1]));
+    for(unsigned i = 0; i < Count; ++i)
+    {
+        glm::vec3 Pos = transformVec3(Positions[i]);
+        m_Vertices.push_back(SVertex(Pos, Normal, glm::vec2(0.0f, 0.0f), m_Color));
+    }
+    
+    for(unsigned i = 0; i < Count - 2; ++i)
+    {
+        m_Indices.push_back(BaseIdx + 0);
+        m_Indices.push_back(BaseIdx + 1 + i);
+        m_Indices.push_back(BaseIdx + 2 + i);
+    }
+}
+
+void CGeometryBuilder::addPolygon(const glm::vec3 Positions[], unsigned VertCount, const uint16_t Indices[], unsigned IndCount)
+{
+    unsigned BaseIdx = m_Vertices.size();
+    glm::vec3 Pos0 = Positions[Indices[0]];
+    glm::vec3 Pos1 = Positions[Indices[1]];
+    glm::vec3 Pos2 = Positions[Indices[2]];
+    glm::vec3 Normal = glm::normalize(m_TransformNormal * glm::cross(Pos2 - Pos1, Pos0 - Pos1));
+    
+    m_Vertices.reserve(m_Vertices.size() + VertCount);
+    for(unsigned i = 0; i < VertCount; ++i)
+    {
+        glm::vec3 Pos = transformVec3(Positions[i]);
+        m_Vertices.push_back(SVertex(Pos, Normal, glm::vec2(0.0f, 0.0f), m_Color));
+    }
+    
+    m_Indices.reserve(m_Indices.size() + IndCount);
+    for(unsigned i = 0; i < IndCount; ++i)
+        m_Indices.push_back(BaseIdx + Indices[i]);
+}
+
 void CGeometryBuilder::addVertices(const std::vector<SVertex> &Vertices, const std::vector<uint16_t> &Indices)
 {
     unsigned Offset = m_Vertices.size();
-    m_Vertices.insert(m_Vertices.end(), Vertices.begin(), Vertices.end());
+    
+    m_Vertices.reserve(m_Vertices.size() + Vertices.size());
+    for(const SVertex &v: Vertices)
+    {
+        m_Vertices.push_back(v);
+        m_Vertices.back().Pos = transformVec3(m_Vertices.back().Pos);
+        m_Vertices.back().Normal = m_TransformNormal * m_Vertices.back().Normal;
+    }
     
     m_Indices.reserve(m_Indices.size() + Indices.size());
     for(uint16_t Idx: Indices)
@@ -327,5 +372,11 @@ CMesh *CGeometryBuilder::createMesh()
     pMesh->setVertices(m_Vertices.data(), m_Vertices.size());
     pMesh->setIndices(m_Indices.data(), m_Indices.size());
     return pMesh;
+}
+
+void CGeometryBuilder::switchVerticesOrder()
+{
+    for(unsigned i = 0; i < m_Indices.size(); i += 3)
+        std::swap(m_Indices[i], m_Indices[i + 1]);
 }
 
