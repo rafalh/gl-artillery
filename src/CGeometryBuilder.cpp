@@ -301,6 +301,16 @@ void CGeometryBuilder::addBox()
     addQuad(Bottom[0], Bottom[1], Bottom[2], Bottom[3]);
 }
 
+void CGeometryBuilder::addBox(const glm::vec3 Vertices[8])
+{
+    addQuad(Vertices[0], Vertices[1], Vertices[2], Vertices[3]);
+    addQuad(Vertices[7], Vertices[6], Vertices[5], Vertices[4]);
+    addQuad(Vertices[1], Vertices[0], Vertices[4], Vertices[5]);
+    addQuad(Vertices[2], Vertices[1], Vertices[5], Vertices[6]);
+    addQuad(Vertices[3], Vertices[2], Vertices[6], Vertices[7]);
+    addQuad(Vertices[0], Vertices[3], Vertices[7], Vertices[4]);
+}
+
 void CGeometryBuilder::addVertices(const std::vector<SVertex> &Vertices, const std::vector<uint16_t> &Indices)
 {
     unsigned Offset = m_Vertices.size();

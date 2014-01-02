@@ -159,8 +159,7 @@ void CRenderer::setModelTransform(const glm::mat4 &ModelMat, bool bSkybox)
     glm::mat4 MVP;
     if(bSkybox)
     {
-        glm::mat4 ViewMat = m_ViewMatrix;
-        ViewMat[3] = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+        glm::mat4 ViewMat = glm::mat4(glm::mat3(m_ViewMatrix));
         MVP = m_ProjMatrix * ViewMat * ModelMat;
     }
     else
@@ -168,6 +167,11 @@ void CRenderer::setModelTransform(const glm::mat4 &ModelMat, bool bSkybox)
     
     GLuint Uniform = glGetUniformLocation(m_Program, "MVP");
     glUniformMatrix4fv(Uniform, 1, GL_FALSE, glm::value_ptr(MVP));
+    
+    glm::mat3 NormalMatrix(ModelMat);
+    Uniform = glGetUniformLocation(m_Program, "NormalMatrix");
+    glUniformMatrix3fv(Uniform, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
+    
     CHECK_GL_ERROR();
 }
 

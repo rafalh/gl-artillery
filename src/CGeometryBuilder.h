@@ -16,6 +16,7 @@ class CGeometryBuilder
         void addTorus(float Radius, float CircleRadius, unsigned Segments = 8, unsigned CircleSegments = 8);
         void addVertices(const std::vector<SVertex> &Vertices, const std::vector<uint16_t> &Indices);
         void addBox();
+        void addBox(const glm::vec3 Vertices[8]);
         CMesh *createMesh();
         
         void setColor(uint32_t Color)

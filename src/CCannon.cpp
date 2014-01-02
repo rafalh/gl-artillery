@@ -15,9 +15,9 @@ CCannon::CCannon(CRenderer *pRenderer):
     prepareBase();
     prepareLauncher();
     
-    m_Transform = glm::mat4(1.0f);
-    m_Transform = glm::translate(m_Transform, glm::vec3(50.0f, -6.0f, 50.0f));
-    m_Transform = glm::rotate(m_Transform, 225.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    m_Transform = mat4();
+    m_Transform = translate(m_Transform, vec3(50.0f, -6.0f, 50.0f));
+    m_Transform = rotate(m_Transform, 225.0f, vec3(0.0f, 1.0f, 0.0f));
 }
 
 CCannon::~CCannon()
@@ -30,8 +30,9 @@ void CCannon::render()
 {
     m_pRenderer->setTexture(CTextureMgr::getInstance().getWhite());
     
-    glm::mat4 Rot = glm::rotate(mat4(), 45.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-    m_pRenderer->setModelTransform(m_Transform * Rot);
+    mat4 Rot = rotate(mat4(), 45.0f, vec3(1.0f, 0.0f, 0.0f));
+    mat4 LauncherTrans = translate(mat4(), vec3(0.0f, 0.5f, 0.0f));
+    m_pRenderer->setModelTransform(m_Transform * LauncherTrans * Rot);
     m_pLauncherMesh->render();
     
     m_pRenderer->setModelTransform(m_Transform);
@@ -43,7 +44,46 @@ void CCannon::prepareBase()
     CGeometryBuilder Builder;
     Builder.setColor(0xFF33AACC);
     
-    glm::mat4 Scale = glm::scale(glm::mat4(), glm::vec3(3.0f, 0.5f, 4.0f));
+    // Front legs
+    
+    vec3 FrontLeg[] = {
+        { 0.5f,  0.0f,  1.0f},
+        { 0.5f,  0.0f, -1.0f},
+        {-0.5f,  0.0f, -1.0f},
+        {-0.5f,  0.0f,  1.0f},
+        { 0.5f, -1.0f,  2.0f},
+        { 0.5f, -1.0f,  0.0f},
+        {-0.5f, -1.0f,  0.0f},
+        {-0.5f, -1.0f,  2.0f},
+    };
+    Builder.setTransform(translate(mat4(), vec3(1.5f, 0.0f, 3.0f)));
+    Builder.addBox(FrontLeg);
+    
+    Builder.setTransform(translate(mat4(), vec3(-1.5f, 0.0f, 3.0f)));
+    Builder.addBox(FrontLeg);
+    
+    // Back legs
+    
+    vec3 BackLeg[] = {
+        { 0.5f,  0.0f,  1.0f},
+        { 0.5f,  0.0f, -1.0f},
+        {-0.5f,  0.0f, -1.0f},
+        {-0.5f,  0.0f,  1.0f},
+        { 0.5f, -1.0f,  1.5f},
+        { 0.5f, -1.0f, -2.0f},
+        {-0.5f, -1.0f, -2.0f},
+        {-0.5f, -1.0f,  1.5f},
+    };
+    Builder.setTransform(translate(mat4(), vec3(1.5f, 0.0f, -3.0f)));
+    Builder.addBox(BackLeg);
+    
+    Builder.setTransform(translate(mat4(), vec3(-1.5f, 0.0f, -3.0f)));
+    Builder.addBox(BackLeg);
+    
+    // Base
+    
+    mat4 Trans = translate(mat4(), vec3(0.0f, 0.5f, 0.0f));
+    mat4 Scale = scale(Trans, vec3(1.8f, 0.5f, 3.5f));
     Builder.setTransform(Scale);
     Builder.addBox();
     
