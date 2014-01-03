@@ -62,3 +62,8 @@ void CInputHandler::onMouseMove(float dx, float dy)
     m_pCamera->rotate(dx, dy);
     m_pCamera->update(dt);
 }
+
+void CInputHandler::onFramebufferSize(float Width, float Height)
+{
+    m_pCamera->setAspectRatio(Width / Height);
+}

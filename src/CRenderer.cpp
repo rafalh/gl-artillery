@@ -60,6 +60,7 @@ CRenderer::CRenderer(unsigned w, unsigned h):
 	// Set callbacks
 	glfwSetWindowUserPointer(m_pWnd, this);
 	glfwSetKeyCallback(m_pWnd, onKey);
+	glfwSetFramebufferSizeCallback(m_pWnd, onFramebufferSize);
 	
 	CHECK_GL_ERROR();
 }
@@ -132,6 +133,15 @@ void CRenderer::onKey(GLFWwindow *pWindow, int Key, int Scancode, int Action, in
     CRenderer *pThis = static_cast<CRenderer*>(glfwGetWindowUserPointer(pWindow));
     if(pThis->m_pInputHandler)
         pThis->m_pInputHandler->onKey(Key, Action);
+}
+
+void CRenderer::onFramebufferSize(GLFWwindow *pWindow, int Width, int Height)
+{
+    glViewport(0, 0, Width, Height);
+    
+    CRenderer *pThis = static_cast<CRenderer*>(glfwGetWindowUserPointer(pWindow));
+    if(pThis->m_pInputHandler)
+        pThis->m_pInputHandler->onFramebufferSize(Width, Height);
 }
 
 void CRenderer::setInputHandler(CInputHandler *pHandler)

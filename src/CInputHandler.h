@@ -11,6 +11,7 @@ class CInputHandler
         
         void onKey(int Key, int Action);
         void onMouseMove(float dx, float dy);
+        void onFramebufferSize(float Width, float Height);
         
         void setCamera(CCamera *pCamera)
         {

@@ -83,6 +83,7 @@ class CRenderer
         
         static void glfwErrorCallback(int iErrorNum, const char *pszDescription);
         static void onKey(GLFWwindow *pWindow, int Key, int Scancode, int Action, int Mods);
+        static void onFramebufferSize(GLFWwindow *pWindow, int Width, int Height);
         void handleCursorMove();
 };
 

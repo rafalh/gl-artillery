@@ -1,8 +1,6 @@
 #ifndef CCAMERA_H
 #define CCAMERA_H
 
-#include "CVector.h"
-
 class CCamera
 {
     public:
@@ -15,6 +13,7 @@ class CCamera
         void setRotation(float fYaw, float fPitch);
         void rotate(float fYaw, float fPitch);
         void update(float dt);
+        void setAspectRatio(float Ratio);
         
         void setControlState(EControl Ctrl, bool bActive)
         {
