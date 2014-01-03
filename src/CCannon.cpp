@@ -9,16 +9,15 @@
 
 using namespace glm;
 
-CCannon::CCannon(CRenderer *pRenderer):
+CCannon::CCannon(const glm::vec3 &Pos, CRenderer *pRenderer):
     m_pRenderer(pRenderer),
     m_pLauncherMesh(nullptr), m_pBaseMesh(nullptr)
 {
     prepareBase();
     prepareLauncher();
     
-    m_Transform = mat4();
-    m_Transform = translate(m_Transform, vec3(50.0f, -6.0f, 50.0f));
-    m_Transform = rotate(m_Transform, 225.0f, vec3(0.0f, 1.0f, 0.0f));
+    m_Transform = translate(mat4(), Pos);
+    m_Transform = rotate(m_Transform, -45.0f, vec3(0.0f, 1.0f, 0.0f));
 }
 
 CCannon::~CCannon()
@@ -31,12 +30,13 @@ void CCannon::render()
 {
     m_pRenderer->setTexture(0);
     
-    mat4 Rot = rotate(mat4(), 45.0f, vec3(1.0f, 0.0f, 0.0f));
+    //mat4 Rot = rotate(mat4(), 45.0f, vec3(1.0f, 0.0f, 0.0f));
+    mat4 FloatingTrans = translate(mat4(), vec3(0.0f, sinf(glfwGetTime() * 3.0f) * 0.1f, 0.0f));
     mat4 LauncherTrans = translate(mat4(), vec3(0.0f, 2.0f, -0.6f));
-    m_pRenderer->setModelTransform(m_Transform * LauncherTrans);// * Rot);
+    m_pRenderer->setModelTransform(m_Transform * FloatingTrans * LauncherTrans);// * Rot);
     m_pLauncherMesh->render();
     
-    m_pRenderer->setModelTransform(m_Transform);
+    m_pRenderer->setModelTransform(m_Transform * FloatingTrans);
     m_pBaseMesh->render();
 }
 

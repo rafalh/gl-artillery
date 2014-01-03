@@ -12,6 +12,7 @@ CHeightMap::CHeightMap(const std::string &Path, CRenderer *pRenderer):
     m_pRenderer(pRenderer)
 {
     m_pImage = new CImage(Path.c_str());
+    m_pImage->convertToGrayscale16();
 }
 
 CHeightMap::~CHeightMap()
@@ -26,29 +27,34 @@ void CHeightMap::build()
     
     float StartTime = glfwGetTime();
     
-	glm::vec3 MinPos(-100.0f, -11.0f, -100.0f);
-	glm::vec3 MaxPos(100.0f, -1.0f, 100.0f);
+	glm::vec3 MinPos(-200.0f, 0.0f, -200.0f);
+	glm::vec3 MaxPos(200.0f, 80.0f, 200.0f);
     
     int w = m_pImage->getWidth();
     int h = m_pImage->getHeight();
+    
 
     m_pMesh = new CMesh;
     
     unsigned VerticesCount = w * h;
     SVertex *pVertices = new SVertex[VerticesCount];
     for(int y = 0; y < h; ++y)
+    {
+        WORD *pScanLine = reinterpret_cast<WORD*>(m_pImage->getScanLine(y));
+        
         for(int x = 0; x < w; ++x)
         {
             SVertex &Vert = pVertices[y * w + x];
-            RGBQUAD rgb = m_pImage->getPixel(x, y);
+            WORD Val = pScanLine[x];
             
             float vx = MinPos.x + x * (MaxPos.x - MinPos.x) / (w - 1);
-            float vy = MinPos.y + (rgb.rgbRed / 255.0f) * (MaxPos.y - MinPos.y);
+            float vy = MinPos.y + (Val / 65535.0f) * (MaxPos.y - MinPos.y);
             float vz = MinPos.z + y * (MaxPos.z - MinPos.z) / (h - 1);
             Vert.Pos = glm::vec3(vx, vy, vz);
             Vert.UV = glm::vec2(vx, vz);
             Vert.Clr = 0xFFFFFF;
         }
+    }
     for(int y = 0; y < h; ++y)
         for(int x = 0; x < w; ++x)
         {
@@ -104,7 +110,7 @@ void CHeightMap::build()
     
     m_Texture = CTextureMgr::getInstance().get("textures/desert.jpg");
     
-    CLogger::getInstance().info("Heightmap built in %.2f seconds\n", glfwGetTime() - StartTime);
+    CLogger::getInstance().info("Heightmap %dx%d built in %.2f seconds\n", w, h, glfwGetTime() - StartTime);
 }
 
 void CHeightMap::render()

@@ -10,9 +10,16 @@ CImage::CImage(const char *pszPath)
 {
     FREE_IMAGE_FORMAT Format = FreeImage_GetFileType(pszPath, 0);
     if(Format == FIF_UNKNOWN)
-        throw CImageFormatNotRecognizedException("Unknown format in CImageReader");
+        Format = FreeImage_GetFIFFromFilename(pszPath);
+    if(Format == FIF_UNKNOWN)
+        throw CImageFormatNotRecognizedException("Unknown image format for %s", pszPath);
     
 	m_pImg = FreeImage_Load(Format, pszPath);
+	if(!m_pImg)
+	    throw CImageFormatNotRecognizedException("Failed to load image %s", pszPath);
+    
+	CLogger::getInstance().info("Loaded %s (fmt %u): type %u bpp %u\n", pszPath, Format,
+	    FreeImage_GetImageType(m_pImg), FreeImage_GetBPP(m_pImg));
 }
 
 CImage::~CImage()
@@ -37,6 +44,24 @@ RGBQUAD CImage::getPixel(int x, int y)
             CLogger::getInstance().error("FreeImage_GetPixelColor failed\n");
         return Color;
     }
+}
+
+void CImage::convertToGrayscale16()
+{
+    if(FreeImage_GetImageType(m_pImg) == FIT_UINT16)
+        return; // nothing to do
+    
+    FIBITMAP *pNewImg = FreeImage_ConvertToUINT16(m_pImg);
+    if(!pNewImg)
+        throw CInvalidImageException("Failed to convert to grayscale 16-bit");
+    
+    FreeImage_Unload(m_pImg);
+    m_pImg = pNewImg;
+}
+
+void *CImage::getScanLine(int y)
+{
+    return FreeImage_GetScanLine(m_pImg, y);
 }
 
 GLuint CImage::createTexture()

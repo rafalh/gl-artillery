@@ -11,7 +11,7 @@ class CGeometryBuilder;
 class CCity: public CSceneNode
 {
     public:
-        CCity(CRenderer *pRenderer);
+        CCity(const glm::vec3 &Pos, CRenderer *pRenderer);
         ~CCity();
         void build();
         void render();

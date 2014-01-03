@@ -4,10 +4,12 @@
 #include "CGeometryBuilder.h"
 #include "CTextureMgr.h"
 
-CCity::CCity(CRenderer *pRenderer):
+using namespace glm;
+
+CCity::CCity(const glm::vec3 &Pos, CRenderer *pRenderer):
     m_pMesh(nullptr), m_pRenderer(pRenderer)
 {
-    m_Transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.5f, 0.0f));
+    m_Transform = translate(mat4(), Pos);
 }
 
 CCity::~CCity()
@@ -17,8 +19,8 @@ CCity::~CCity()
 
 void CCity::build()
 {
-    glm::vec3 MinPos(-10.0f, -5.0f, -10.0f);
-	glm::vec3 MaxPos(10.0f, 5.0f, 10.0f);
+    vec3 MinPos(-10.0f, -5.0f, -10.0f);
+	vec3 MaxPos(10.0f, 5.0f, 10.0f);
     unsigned CountX = 10, CountZ = 10;
     
     CGeometryBuilder GeomBuilder;
@@ -37,24 +39,22 @@ void CCity::build()
             float WorldX = MinPos.x + x * (2*Margin + SizeX);
             float WorldZ = MinPos.z + z * (2*Margin + SizeZ);
             
-            addBuilding(glm::vec3(WorldX, MinPos.y, WorldZ), glm::vec3(WorldX + SizeX, MinPos.y + SizeY, WorldZ + SizeZ), GeomBuilder);
+            addBuilding(vec3(WorldX, MinPos.y, WorldZ), vec3(WorldX + SizeX, MinPos.y + SizeY, WorldZ + SizeZ), GeomBuilder);
         }
     
-    m_pMesh = new CMesh;
-    m_pMesh->setVertices(GeomBuilder.getVertices().data(), GeomBuilder.getVertices().size());
-    m_pMesh->setIndices(GeomBuilder.getIndices().data(), GeomBuilder.getIndices().size());
+    m_pMesh = GeomBuilder.createMesh();
 }
 
 void CCity::addBuilding(const glm::vec3 &Min, const glm::vec3 &Max, CGeometryBuilder &Geometry)
 {
-    glm::vec3 Pos1(Min.x, Min.y, Min.z);
-    glm::vec3 Pos2(Min.x, Min.y, Max.z);
-    glm::vec3 Pos3(Max.x, Min.y, Max.z);
-    glm::vec3 Pos4(Max.x, Min.y, Min.z);
-    glm::vec3 Pos5(Min.x, Max.y, Min.z);
-    glm::vec3 Pos6(Min.x, Max.y, Max.z);
-    glm::vec3 Pos7(Max.x, Max.y, Max.z);
-    glm::vec3 Pos8(Max.x, Max.y, Min.z);
+    vec3 Pos1(Min.x, Min.y, Min.z);
+    vec3 Pos2(Min.x, Min.y, Max.z);
+    vec3 Pos3(Max.x, Min.y, Max.z);
+    vec3 Pos4(Max.x, Min.y, Min.z);
+    vec3 Pos5(Min.x, Max.y, Min.z);
+    vec3 Pos6(Min.x, Max.y, Max.z);
+    vec3 Pos7(Max.x, Max.y, Max.z);
+    vec3 Pos8(Max.x, Max.y, Min.z);
     Geometry.addQuad(Pos1, Pos2, Pos6, Pos5);
     Geometry.addQuad(Pos2, Pos3, Pos7, Pos6);
     Geometry.addQuad(Pos3, Pos4, Pos8, Pos7);

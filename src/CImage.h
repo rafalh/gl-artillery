@@ -11,6 +11,8 @@ class CImage
         GLuint createTexture();
         
         RGBQUAD getPixel(int x, int y);
+        void convertToGrayscale16();
+        void *getScanLine(int y);
         
         int getWidth() const
         {

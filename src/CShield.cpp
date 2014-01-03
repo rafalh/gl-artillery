@@ -6,16 +6,17 @@
 #include "CShadersMgr.h"
 #include "CMesh.h"
 
-CShield::CShield(CRenderer *pRenderer):
+using namespace glm;
+
+CShield::CShield(const glm::vec3 &Pos, CRenderer *pRenderer):
     m_pRenderer(pRenderer), m_pMesh(nullptr)
 {
     m_pMesh = new CMesh;
     CGeometryBuilder Builder;
     Builder.setColor(0x8040A0FF);
     Builder.addIcosphere(2);
-    m_pMesh->setVertices(Builder.getVertices().data(), Builder.getVertices().size());
-    m_pMesh->setIndices(Builder.getIndices().data(), Builder.getIndices().size());
-    m_Transform = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -5.0f, 0.0f)), glm::vec3(16.0f, 16.0f, 16.0f));
+    m_pMesh = Builder.createMesh();
+    m_Transform = translate(mat4(), Pos) * scale(mat4(), vec3(16.0f, 16.0f, 16.0f));
 }
 
 CShield::~CShield()

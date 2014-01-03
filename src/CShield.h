@@ -9,7 +9,7 @@ class CMesh;
 class CShield: public CSceneNode
 {
     public:
-        CShield(CRenderer *pRenderer);
+        CShield(const glm::vec3 &Pos, CRenderer *pRenderer);
         ~CShield();
         void render();
         

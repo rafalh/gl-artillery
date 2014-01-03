@@ -9,7 +9,7 @@ class CMesh;
 class CCannon: public CSceneNode
 {
     public:
-        CCannon(CRenderer *pRenderer);
+        CCannon(const glm::vec3 &Pos, CRenderer *pRenderer);
         ~CCannon();
         void render();
         

@@ -5,8 +5,8 @@
 using namespace std;
 
 const float PI_VALUE = 3.141592f;
-const float MAX_SPEED = 2.0f;
-const float ACCELERATION = 8.0f;
+const float MAX_SPEED = 20.0f;
+const float ACCELERATION = 80.0f;
 
 CCamera::CCamera():
     m_Position(0.0f, 0.0f, 0.0f),
