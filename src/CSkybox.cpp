@@ -100,7 +100,7 @@ void CSkybox::render()
         m_pRenderer->setTexture(m_Textures[i]);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        m_pMesh->renderPart(i * 6, 6);
+        m_pMesh->render(CMesh::SOffsetSize(i * 6, 6));
     }
     
     m_pRenderer->setProgram(OldProgram);

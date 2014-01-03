@@ -2,6 +2,7 @@
 #define CGEOMETRYBUILDER_H
 
 #include "SVertex.h"
+#include "CMesh.h"
 
 class CMesh;
 
@@ -19,6 +20,7 @@ class CGeometryBuilder
         void addBox(const glm::vec3 Vertices[8]);
         void addPolygon(const glm::vec3 Vertices[], unsigned Count);
         void addPolygon(const glm::vec3 Vertices[], unsigned VertCount, const uint16_t Indices[], unsigned IndCount);
+        CMesh::SOffsetSize subMesh();
         CMesh *createMesh(bool bDebug = false);
         void switchVerticesOrder();
         
@@ -57,9 +59,10 @@ class CGeometryBuilder
     private:
         std::vector<SVertex> m_Vertices;
         std::vector<uint16_t> m_Indices;
-        uint32_t m_Color;
         glm::mat4 m_Transform;
         glm::mat3 m_TransformNormal;
+        unsigned m_Offset;
+        uint32_t m_Color;
         
         glm::vec3 transformVec3(const glm::vec3 &v)
         {

@@ -2,9 +2,10 @@
 #define CCANNON_H
 
 #include "CSceneNode.h"
+#include "CMesh.h"
 
 class CRenderer;
-class CMesh;
+class CGeometryBuilder;
 
 class CCannon: public CSceneNode
 {
@@ -12,15 +13,18 @@ class CCannon: public CSceneNode
         CCannon(const glm::vec3 &Pos, CRenderer *pRenderer);
         ~CCannon();
         void render();
+        void shoot();
         
     private:
         CRenderer *m_pRenderer;
-        CMesh *m_pLauncherMesh;
-        CMesh *m_pBaseMesh;
+        CMesh *m_pMesh;
         glm::mat4 m_Transform;
+        float m_ShotTime;
+        const float SHOT_TIME = 2.0f;
+        CMesh::SOffsetSize m_CannonBase, m_FrontGun, m_BackGun, m_Rotator;
         
-        void prepareBase();
-        void prepareLauncher();
+        void prepareBase(CGeometryBuilder &Builder);
+        void prepareLauncher(CGeometryBuilder &Builder);
 };
 
 #endif // CCANNON_H

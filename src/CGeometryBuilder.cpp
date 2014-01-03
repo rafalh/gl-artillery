@@ -7,7 +7,8 @@ using namespace glm;
 const float PI = 3.141592;
 
 CGeometryBuilder::CGeometryBuilder():
-    m_Color(0xFFFFFFFF), m_Transform(1.0f) {}
+    m_Transform(1.0f),
+    m_Offset(0), m_Color(0xFFFFFFFF) {}
 
 void CGeometryBuilder::addQuad(const glm::vec3 &v1, const glm::vec3 &v2, const glm::vec3 &v3, const glm::vec3 &v4)
 {
@@ -366,6 +367,13 @@ void CGeometryBuilder::addVertices(const std::vector<SVertex> &Vertices, const s
     m_Indices.reserve(m_Indices.size() + Indices.size());
     for(uint16_t Idx: Indices)
         m_Indices.push_back(Offset + Idx);
+}
+
+CMesh::SOffsetSize CGeometryBuilder::subMesh()
+{
+    CMesh::SOffsetSize Result(m_Offset, m_Indices.size() - m_Offset);
+    m_Offset = m_Indices.size();
+    return Result;
 }
 
 CMesh *CGeometryBuilder::createMesh(bool bDebug)

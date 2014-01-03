@@ -9,12 +9,19 @@
 
 using namespace glm;
 
+static const float PI = 3.141592f;
+
 CCannon::CCannon(const glm::vec3 &Pos, CRenderer *pRenderer):
     m_pRenderer(pRenderer),
-    m_pLauncherMesh(nullptr), m_pBaseMesh(nullptr)
+    m_pMesh(nullptr),
+    m_ShotTime(0.0f)
 {
-    prepareBase();
-    prepareLauncher();
+    CGeometryBuilder Builder;
+    Builder.setColor(0xFF337799);
+    
+    prepareBase(Builder);
+    prepareLauncher(Builder);
+    m_pMesh = Builder.createMesh();
     
     m_Transform = translate(mat4(), Pos);
     m_Transform = rotate(m_Transform, -45.0f, vec3(0.0f, 1.0f, 0.0f));// * scale(mat4(), vec3(10.0f, 10.0f, 10.0f));
@@ -22,34 +29,68 @@ CCannon::CCannon(const glm::vec3 &Pos, CRenderer *pRenderer):
 
 CCannon::~CCannon()
 {
-    delete m_pLauncherMesh;
-    delete m_pBaseMesh;
+    delete m_pMesh;
 }
 
 void CCannon::render()
 {
     m_pRenderer->setTexture(0);
     m_pRenderer->setProgramUniform("MaterialAmbientColor", vec3(0.1f, 0.1f, 0.1f));
-    //m_pRenderer->setProgramUniform("MaterialDiffuseColor", vec3(0.0f, 0.0f, 0.0f));
     m_pRenderer->setProgramUniform("MaterialDiffuseColor", vec3(1.0f, 1.0f, 1.0f));
     m_pRenderer->setProgramUniform("MaterialSpecularColor", vec3(0.3f, 0.3f, 0.3f));
     m_pRenderer->setProgramUniform("MaterialShininess", 64.0f);
     
-    //mat4 Rot = rotate(mat4(), 45.0f, vec3(1.0f, 0.0f, 0.0f));
-    mat4 FloatingTrans = translate(mat4(), vec3(0.0f, sinf(glfwGetTime() * 3.0f) * 0.1f, 0.0f));
-    mat4 LauncherTrans = translate(mat4(), vec3(0.0f, 2.0f, -0.6f));
-    m_pRenderer->setModelTransform(m_Transform * FloatingTrans * LauncherTrans);// * Rot);
-    m_pLauncherMesh->render();
+    float dt = glfwGetTime() - m_ShotTime;
+    float ShotProgress = dt > SHOT_TIME ? 0.0f : (dt / SHOT_TIME);
+    float ShotPhases[] = {0.1f, 0.05f, 0.85f};
+    unsigned ShotPhase = 0;
+    float ShotPhaseProgress = ShotProgress;
+    while(ShotPhaseProgress > ShotPhases[ShotPhase])
+    {
+        ShotPhaseProgress -= ShotPhases[ShotPhase];
+        ++ShotPhase;
+    }
+    ShotPhaseProgress /= ShotPhases[ShotPhase];
     
-    m_pRenderer->setModelTransform(m_Transform * FloatingTrans);
-    m_pBaseMesh->render();
+    //mat4 RotationX = rotate(mat4(), 15.0f, vec3(0.0f, 1.0f, 0.0f));
+    mat4 RotationY = rotate(mat4(), 0.0f, vec3(0.0f, 1.0f, 0.0f));
+    
+    mat4 BaseTransform = m_Transform * translate(mat4(), vec3(0.0f, sinf(glfwGetTime() * 3.0f) * 0.1f, 0.0f));
+    mat4 RotatorTransform = translate(mat4(), vec3(0.0f, 0.9f, 0.9f)) * RotationY;
+    mat4 FrontGunTransform = translate(mat4(), vec3(0.0f, 2.0f, -0.6f + 1.5f)) * RotationY;
+    mat4 BackGunTransform = translate(mat4(), vec3(0.0f, 2.0f, -0.6f + 1.5f)) * RotationY;
+    
+    if(ShotProgress < 0.15f) // 0.00 - 0.15 ms
+        FrontGunTransform = FrontGunTransform * translate(mat4(), vec3(0.0f, 0.0f, -sinf(ShotProgress/0.15f * PI/2.0f)));
+    else if(ShotProgress < 0.25f) // 0.15 - 0.25 ms
+        FrontGunTransform = FrontGunTransform * translate(mat4(), vec3(0.0f, 0.0f, -1.0f));
+    else // 0.25 - 1.00 ms
+        FrontGunTransform = FrontGunTransform * translate(mat4(), vec3(0.0f, 0.0f, -1.0f + (ShotProgress-0.25f)/0.75f));
+    
+    if(ShotProgress < 0.10f) // 0.00 - 0.10 ms
+        ; //nothing
+    else if(ShotProgress < 0.25f) // 0.10 - 0.25 ms
+        BackGunTransform = BackGunTransform * translate(mat4(), vec3(0.0f, 0.0f, -0.5f * sinf((ShotProgress-0.10f)/0.15f * PI/2.0f)));
+    else // 0.25 - 1.00 ms
+        BackGunTransform = BackGunTransform * translate(mat4(), vec3(0.0f, 0.0f, -0.5f + 0.5f * (ShotProgress-0.25f)/0.75f));
+    
+    m_pRenderer->setModelTransform(BaseTransform * FrontGunTransform);
+    m_pMesh->render(m_FrontGun);
+    m_pRenderer->setModelTransform(BaseTransform * BackGunTransform);
+    m_pMesh->render(m_BackGun);
+    
+    m_pRenderer->setModelTransform(BaseTransform * RotatorTransform);
+    m_pMesh->render(m_Rotator);
+    
+    m_pRenderer->setModelTransform(BaseTransform);
+    m_pMesh->render(m_CannonBase);
+    
+    if(glfwGetTime() > m_ShotTime + 3.0f)
+        shoot();
 }
 
-void CCannon::prepareBase()
+void CCannon::prepareBase(CGeometryBuilder &Builder)
 {
-    CGeometryBuilder Builder;
-    Builder.setColor(0xFF337799);
-    
     CGeometryBuilder BaseSideBuilder;
     BaseSideBuilder.setColor(Builder.getColor());
     
@@ -83,8 +124,8 @@ void CCannon::prepareBase()
     
     // Base side - right face
     vec3 SideBasePos1[8] = {
-        { 0.5f,  1.0f, -3.0f},
-        { 0.5f,  1.0f, -1.3f},
+        { 0.5f,  1.2f, -2.9f},
+        { 0.5f,  1.2f, -1.4f},
         { 0.5f,  0.0f, -0.8f},
         { 0.5f,  0.0f,  1.7f},
         { 0.5f, -0.8f,  2.4f},
@@ -202,38 +243,30 @@ void CCannon::prepareBase()
     };
     Builder.setTransform(mat4());
     Builder.addBox(LauncherBase);
+    m_CannonBase = Builder.subMesh();
 
     // Launcher rotator
     vec3 LauncherRotator[] = {
-        { 1.0f,  1.0f,  2.0f},
-        { 1.0f,  1.0f, -0.2f},
-        {-1.0f,  1.0f, -0.2f},
-        {-1.0f,  1.0f,  2.0f},
-        { 1.0f,  0.8f,  2.0f},
-        { 1.0f,  0.8f, -0.2f},
-        {-1.0f,  0.8f, -0.2f},
-        {-1.0f,  0.8f,  2.0f},
+        { 1.0f,  0.1f,  1.1f},
+        { 1.0f,  0.1f, -1.1f},
+        {-1.0f,  0.1f, -1.1f},
+        {-1.0f,  0.1f,  1.1f},
+        { 1.0f, -0.1f,  1.1f},
+        { 1.0f, -0.1f, -1.1f},
+        {-1.0f, -0.1f, -1.1f},
+        {-1.0f, -0.1f,  1.1f},
     };
     Builder.setTransform(mat4());
     Builder.addBox(LauncherRotator);
-    
-    m_pBaseMesh = Builder.createMesh();
+    m_Rotator = Builder.subMesh();
 }
 
-void CCannon::prepareLauncher()
+void CCannon::prepareLauncher(CGeometryBuilder &Builder)
 {
-    CGeometryBuilder Builder;
-    Builder.setColor(0xFF337799);
-    
-    // Larger tube
     mat4 Rot = rotate(mat4(), 90.0f, vec3(1.0f, 0.0f, 0.0f));
-    mat4 Scale1 = scale(mat4(), vec3(1.0f, 1.0f, 2.0f));
-    mat4 Trans1 = translate(mat4(), vec3(0.0f, 0.0f, 2.5f));
-    Builder.setTransform(Trans1 * Scale1 * Rot);
-    Builder.addTube(0.35f, 0.6f, 20);
     
     // Smaller tube
-    mat4 Trans2 = translate(mat4(), vec3(0.0f, 0.0f, 7.5f));
+    mat4 Trans2 = translate(mat4(), vec3(0.0f, 0.0f, 6.0f));
     mat4 Scale2 = scale(mat4(), vec3(1.0f, 1.0f, 3.0f));
     Builder.setTransform(Trans2 * Scale2 * Rot);
     Builder.addTube(0.35f, 0.40f, 20);
@@ -241,23 +274,31 @@ void CCannon::prepareLauncher()
     // Rings
     for(unsigned i = 0; i < 6; ++i)
     {
-        mat4 RingTrans = translate(mat4(), vec3(0.0f, 0.0f, 7.0f + i * 0.3f));
+        mat4 RingTrans = translate(mat4(), vec3(0.0f, 0.0f, 5.5f + i * 0.3f));
         Builder.setTransform(RingTrans * Rot);
         Builder.addTorus(0.5f, 0.05f, 20, 20);
     }
+    
+    m_FrontGun = Builder.subMesh();
+    
+    // Larger tube
+    mat4 Scale1 = scale(mat4(), vec3(1.0f, 1.0f, 2.0f));
+    mat4 Trans1 = translate(mat4(), vec3(0.0f, 0.0f, 1.0f));
+    Builder.setTransform(Trans1 * Scale1 * Rot);
+    Builder.addTube(0.35f, 0.6f, 20);
     
     // Launcher fragment
     CGeometryBuilder LauncherPartBuilder;
     LauncherPartBuilder.setColor(Builder.getColor());
     vec3 Launcher[] = {
-        { 0.9f,  1.0f,  1.2f},
-        { 0.9f,  1.0f,  0.1f},
-        { 0.1f,  1.0f,  0.1f},
-        { 0.1f,  1.0f,  1.2f},
-        { 1.0f,  0.0f,  1.2f},
-        { 1.0f,  0.0f,  0.0f},
-        { 0.0f,  0.0f,  0.0f},
-        { 0.0f,  0.0f,  1.2f},
+        { 0.9f,  1.0f,  1.4f},
+        { 0.9f,  1.0f,  0.3f},
+        { 0.1f,  1.0f,  0.3f},
+        { 0.1f,  1.0f,  1.4f},
+        { 1.0f,  0.0f,  1.5f},
+        { 1.0f,  0.0f,  0.3f},
+        { 0.0f,  0.0f,  0.3f},
+        { 0.0f,  0.0f,  1.5f},
     };
     LauncherPartBuilder.setTransform(translate(mat4(), vec3(0.0f, 0.0f, 0.0f)));
     LauncherPartBuilder.addBox(Launcher);
@@ -276,9 +317,14 @@ void CCannon::prepareLauncher()
     // Entire launcher
     Builder.setTransform(mat4());
     Builder.addVertices(LauncherHalfBuilder.getVertices(), LauncherHalfBuilder.getIndices());
-    Builder.setTransform(translate(mat4(), vec3(0.0f, 0.0f, 3.0f)) * scale(mat4(), vec3(1.0f, 1.0f, -1.0f)));
+    Builder.setTransform(scale(mat4(), vec3(1.0f, 1.0f, -1.0f)));
     LauncherHalfBuilder.switchVerticesOrder();
     Builder.addVertices(LauncherHalfBuilder.getVertices(), LauncherHalfBuilder.getIndices());
     
-    m_pLauncherMesh = Builder.createMesh();
+    m_BackGun = Builder.subMesh();
+}
+
+void CCannon::shoot()
+{
+    m_ShotTime = glfwGetTime();
 }

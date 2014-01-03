@@ -53,7 +53,7 @@ void CHeightMap::build()
             float vy = MinPos.y + (Val / 65535.0f) * (MaxPos.y - MinPos.y);
             float vz = MinPos.z + y * (MaxPos.z - MinPos.z) / (h - 1);
             Vert.Pos = vec3(vx, vy, vz);
-            Vert.UV = vec2(vx, vz);
+            Vert.UV = vec2(vx / 5.0f, vz / 5.0f);
             Vert.Clr = 0xFFFFFF;
         }
     }
@@ -62,13 +62,13 @@ void CHeightMap::build()
         {
             if(x > 0 && x < w - 1 && y > 0 && y < h - 1)
             {
-                vec3 &Pos = pVertices[y * w + x].Pos;
-                vec3 &PosL = pVertices[y * w + x - 1].Pos;
-                vec3 &PosR = pVertices[y * w + x + 1].Pos;
-                vec3 &PosT = pVertices[(y - 1) * w + x].Pos;
-                vec3 &PosB = pVertices[(y + 1) * w + x].Pos;
-                vec3 &PosLT = pVertices[(y - 1) * w + x - 1].Pos;
-                vec3 &PosRB = pVertices[(y + 1) * w + x + 1].Pos;
+                const vec3 &Pos = pVertices[y * w + x].Pos;
+                const vec3 &PosL = pVertices[y * w + x - 1].Pos;
+                const vec3 &PosR = pVertices[y * w + x + 1].Pos;
+                const vec3 &PosT = pVertices[(y - 1) * w + x].Pos;
+                const vec3 &PosB = pVertices[(y + 1) * w + x].Pos;
+                const vec3 &PosLT = pVertices[(y - 1) * w + x - 1].Pos;
+                const vec3 &PosRB = pVertices[(y + 1) * w + x + 1].Pos;
                 vec3 n1 = normalize(cross(PosLT - Pos, PosL - Pos));
                 //assert(n1.y >= 0.0f);
                 vec3 n2 = normalize(cross(PosL - Pos, PosB - Pos));
@@ -82,7 +82,7 @@ void CHeightMap::build()
                 vec3 n6 = normalize(cross(PosT - Pos, PosLT - Pos));
                 //assert(n4.y >= 0.0f);
                 
-                pVertices[y * w + x].Normal = (n1 + n2 + n3 + n4 + n5 + n6) / 6.0f;
+                pVertices[y * w + x].Normal = normalize((n1 + n2 + n3 + n4 + n5 + n6) / 6.0f);
             }
             else
                 pVertices[y * w + x].Normal = vec3(0.0f, 1.0f, 0.0f);

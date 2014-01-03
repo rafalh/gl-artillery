@@ -122,21 +122,11 @@ void CMesh::setIndices(const uint16_t *pIndices, unsigned Count)
     CHECK_GL_ERROR();
 }
 
-void CMesh::render()
+void CMesh::render(const SOffsetSize &OffsetSize)
 {
     // Draw triangles
+    GLvoid *Offset = reinterpret_cast<GLvoid*>(OffsetSize.Offset * (m_IndexType == GL_UNSIGNED_SHORT ? 2 : 4));
     glBindVertexArray(m_VertexArray);
-	glDrawElements(GL_TRIANGLES, m_IndicesCount, m_IndexType, nullptr);
-	if(m_bDrawNormals)
-	    glDrawArrays(GL_LINES, m_VerticesCount, 2 * m_VerticesCount);
-	CHECK_GL_ERROR();
-}
-
-void CMesh::renderPart(unsigned Offset, unsigned Count)
-{
-    // Draw triangles
-    Offset *= m_IndexType == GL_UNSIGNED_SHORT ? 2 : 4;
-    glBindVertexArray(m_VertexArray);
-	glDrawElements(GL_TRIANGLES, Count, m_IndexType, (GLvoid*)Offset);
+	glDrawElements(GL_TRIANGLES, OffsetSize.Size, m_IndexType, Offset);
 	CHECK_GL_ERROR();
 }
