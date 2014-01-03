@@ -6,6 +6,8 @@
 #include "CTextureMgr.h"
 #include "CMesh.h"
 
+using namespace glm;
+
 CHeightMap::CHeightMap(const std::string &Path, CRenderer *pRenderer):
     m_pMesh(nullptr),
     m_Texture(0),
@@ -27,8 +29,8 @@ void CHeightMap::build()
     
     float StartTime = glfwGetTime();
     
-	glm::vec3 MinPos(-200.0f, 0.0f, -200.0f);
-	glm::vec3 MaxPos(200.0f, 80.0f, 200.0f);
+	vec3 MinPos(-200.0f, 0.0f, -200.0f);
+	vec3 MaxPos(200.0f, 80.0f, 200.0f);
     
     int w = m_pImage->getWidth();
     int h = m_pImage->getHeight();
@@ -50,8 +52,8 @@ void CHeightMap::build()
             float vx = MinPos.x + x * (MaxPos.x - MinPos.x) / (w - 1);
             float vy = MinPos.y + (Val / 65535.0f) * (MaxPos.y - MinPos.y);
             float vz = MinPos.z + y * (MaxPos.z - MinPos.z) / (h - 1);
-            Vert.Pos = glm::vec3(vx, vy, vz);
-            Vert.UV = glm::vec2(vx, vz);
+            Vert.Pos = vec3(vx, vy, vz);
+            Vert.UV = vec2(vx, vz);
             Vert.Clr = 0xFFFFFF;
         }
     }
@@ -60,30 +62,30 @@ void CHeightMap::build()
         {
             if(x > 0 && x < w - 1 && y > 0 && y < h - 1)
             {
-                glm::vec3 &Pos = pVertices[y * w + x].Pos;
-                glm::vec3 &PosL = pVertices[y * w + x - 1].Pos;
-                glm::vec3 &PosR = pVertices[y * w + x + 1].Pos;
-                glm::vec3 &PosT = pVertices[(y - 1) * w + x].Pos;
-                glm::vec3 &PosB = pVertices[(y + 1) * w + x].Pos;
-                glm::vec3 &PosLT = pVertices[(y - 1) * w + x - 1].Pos;
-                glm::vec3 &PosRB = pVertices[(y + 1) * w + x + 1].Pos;
-                glm::vec3 n1 = glm::normalize(glm::cross(PosLT - Pos, PosL - Pos));
-                assert(n1.y >= 0.0f);
-                glm::vec3 n2 = glm::normalize(glm::cross(PosL - Pos, PosB - Pos));
-                assert(n2.y >= 0.0f);
-                glm::vec3 n3 = glm::normalize(glm::cross(PosB - Pos, PosRB - Pos));
-                assert(n3.y >= 0.0f);
-                glm::vec3 n4 = glm::normalize(glm::cross(PosRB - Pos, PosR - Pos));
-                assert(n4.y >= 0.0f);
-                glm::vec3 n5 = glm::normalize(glm::cross(PosR - Pos, PosT - Pos));
-                assert(n4.y >= 0.0f);
-                glm::vec3 n6 = glm::normalize(glm::cross(PosT - Pos, PosLT - Pos));
-                assert(n4.y >= 0.0f);
+                vec3 &Pos = pVertices[y * w + x].Pos;
+                vec3 &PosL = pVertices[y * w + x - 1].Pos;
+                vec3 &PosR = pVertices[y * w + x + 1].Pos;
+                vec3 &PosT = pVertices[(y - 1) * w + x].Pos;
+                vec3 &PosB = pVertices[(y + 1) * w + x].Pos;
+                vec3 &PosLT = pVertices[(y - 1) * w + x - 1].Pos;
+                vec3 &PosRB = pVertices[(y + 1) * w + x + 1].Pos;
+                vec3 n1 = normalize(cross(PosLT - Pos, PosL - Pos));
+                //assert(n1.y >= 0.0f);
+                vec3 n2 = normalize(cross(PosL - Pos, PosB - Pos));
+                //assert(n2.y >= 0.0f);
+                vec3 n3 = normalize(cross(PosB - Pos, PosRB - Pos));
+                //assert(n3.y >= 0.0f);
+                vec3 n4 = normalize(cross(PosRB - Pos, PosR - Pos));
+                //assert(n4.y >= 0.0f);
+                vec3 n5 = normalize(cross(PosR - Pos, PosT - Pos));
+                //assert(n4.y >= 0.0f);
+                vec3 n6 = normalize(cross(PosT - Pos, PosLT - Pos));
+                //assert(n4.y >= 0.0f);
                 
                 pVertices[y * w + x].Normal = (n1 + n2 + n3 + n4 + n5 + n6) / 6.0f;
             }
             else
-                pVertices[y * w + x].Normal = glm::vec3(0.0f, 1.0f, 0.0f);
+                pVertices[y * w + x].Normal = vec3(0.0f, 1.0f, 0.0f);
         }
     m_pMesh->setVertices(pVertices, VerticesCount);
     delete[] pVertices;
@@ -121,6 +123,10 @@ void CHeightMap::render()
     m_pRenderer->setModelTransform(glm::mat4(1.0f));
     
     m_pRenderer->setTexture(m_Texture);
+    m_pRenderer->setProgramUniform("MaterialAmbientColor", vec3(0.2f, 0.2f, 0.2f));
+    m_pRenderer->setProgramUniform("MaterialDiffuseColor", vec3(1.0f, 1.0f, 1.0f));
+    m_pRenderer->setProgramUniform("MaterialSpecularColor", vec3(0.0f, 0.0f, 0.0f));
+    m_pRenderer->setProgramUniform("MaterialShininess", 8.0f);
     
     m_pMesh->render();
 }

@@ -6,7 +6,7 @@
 class CMesh
 {
     public:
-        CMesh();
+        CMesh(bool bDrawNormals = false);
         ~CMesh();
         void setVertices(const SVertex *pVertices, unsigned Count);
         void setIndices(const uint32_t *pIndices, unsigned Count);
@@ -17,8 +17,9 @@ class CMesh
     private:
         GLuint m_VertexArray;
         GLuint m_VertexBuf, m_ElementBuf;
-        unsigned m_IndicesCount;
+        unsigned m_VerticesCount, m_IndicesCount;
         GLuint m_IndexType;
+        bool m_bDrawNormals;
 };
 
 #endif // CMESH_H

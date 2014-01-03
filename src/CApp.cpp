@@ -21,7 +21,7 @@ CApp::CApp()
     m_pSceneMgr = new CSceneMgr(m_pRenderer);
     
     CCamera *pCam = new CCamera();
-    pCam->setPosition(vec3(60.0f, 0.0f, 60.0f));
+    pCam->setPosition(vec3(40.0f, 40.0f, -40.0f));
     
     CInputHandler *pInputHandler = new CInputHandler(m_pRenderer);
     pInputHandler->setCamera(pCam);
@@ -32,7 +32,7 @@ CApp::CApp()
     m_pSceneMgr->add(new CHeightMap("textures/hmap.tif", m_pRenderer));
     m_pSceneMgr->add(new CCity(vec3(-45.0f, 11.0f, 45.0f), m_pRenderer));
     m_pSceneMgr->add(new CShield(vec3(-45.0f, 7.0f, 45.0f), m_pRenderer));
-    m_pSceneMgr->add(new CCannon(vec3(34.0f, 33.9f, -34.0f), m_pRenderer));
+    m_pSceneMgr->add(new CCannon(vec3(33.9f, 33.9f, -34.0f), m_pRenderer));
     
     m_pFpsCounter = new CFpsCounter;
     m_pFpsCounter->addObserver(this);

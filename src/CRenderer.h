@@ -62,6 +62,7 @@ class CRenderer
         }
         
         void setProgramUniform(const char *pszName, const glm::vec3 &Value);
+        void setProgramUniform(const char *pszName, const glm::vec4 &Value);
         void setProgramUniform(const char *pszName, float Value);
         void setInputHandler(CInputHandler *pHandler);
         void setDoubleSided(bool DoubleSided);

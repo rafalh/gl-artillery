@@ -12,20 +12,25 @@ out vec4 PixelColor;
 // Values that stay constant for the whole rendering
 uniform sampler2D TextureSampler;
 uniform vec3 EyePos;
+uniform vec3 MaterialAmbientColor;
+uniform vec3 MaterialDiffuseColor;
+uniform vec3 MaterialSpecularColor;
+uniform float MaterialShininess;
 
 void main()
 {
-	vec3 DiffuseColor = texture(TextureSampler, FragmentUV).rgb * FragmentColor.rgb;
-	vec3 AmbientColor = DiffuseColor * vec3(0.2f, 0.2f, 0.2f);
-	vec3 SpectularColor = DiffuseColor;
+	vec3 Color = texture(TextureSampler, FragmentUV).rgb * FragmentColor.rgb;
+	vec3 DiffuseColor = Color * MaterialDiffuseColor;
+	vec3 AmbientColor = Color * MaterialAmbientColor;
+	vec3 SpectularColor = MaterialSpecularColor;
 	
-	vec3 LightDir = normalize(vec3(-0.5f, 1.0f, 0.5f));
+	vec3 LightDir = normalize(vec3(-1.0f, 1.0f, 1.0f));
 	vec3 LightColor = vec3(0.8f, 0.8f, 0.8f);
 	
 	// Eye vector (towards the camera)
 	vec3 EyeDir = normalize(EyePos - FragmentPos);
 	
-	float CosTheta = clamp(dot(FragmentNormal, LightDir), 0, 1);
+	float CosTheta = clamp(dot(FragmentNormal, LightDir), 0.0f, 1.0f);
 	
 	// Direction in which the triangle reflects the light
 	vec3 ReflectionDir = reflect(-LightDir, FragmentNormal);
@@ -33,14 +38,11 @@ void main()
 	// clamped to 0
 	//  - Looking into the reflection -> 1
 	//  - Looking elsewhere -> < 1
-	float CosAlpha = clamp(dot(EyeDir, ReflectionDir), 0.0f, 1.0f);
+	float CosAlpha = CosTheta > 0.0f ? clamp(dot(EyeDir, ReflectionDir), 0.0f, 1.0f) : 0.0f;
 
-	vec3 PixelColor3 = 
-		// Ambient : simulates indirect lighting
+	PixelColor = vec4(clamp(
 		AmbientColor +
-		// Diffuse : "color" of the object
-		DiffuseColor * LightColor * CosTheta;
-		// Specular : reflective highlight, like a mirror
-		//SpectularColor * LightColor * pow(CosAlpha, 16.0f)
-	PixelColor = vec4(PixelColor3, FragmentColor.a);
+		DiffuseColor * LightColor * CosTheta +
+		SpectularColor * LightColor * pow(CosAlpha, MaterialShininess), 0.0f, 1.0f),
+		FragmentColor.a);
 }

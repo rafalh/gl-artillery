@@ -168,9 +168,8 @@ void CRenderer::setModelTransform(const glm::mat4 &ModelMat, bool bSkybox)
     GLuint Uniform = glGetUniformLocation(m_Program, "MVP");
     glUniformMatrix4fv(Uniform, 1, GL_FALSE, glm::value_ptr(MVP));
     
-    glm::mat3 NormalMatrix(ModelMat);
-    Uniform = glGetUniformLocation(m_Program, "NormalMatrix");
-    glUniformMatrix3fv(Uniform, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
+    Uniform = glGetUniformLocation(m_Program, "ModelMatrix");
+    glUniformMatrix4fv(Uniform, 1, GL_FALSE, glm::value_ptr(ModelMat));
     
     CHECK_GL_ERROR();
 }
@@ -191,6 +190,13 @@ void CRenderer::setProgramUniform(const char *pszName, const glm::vec3 &Value)
 {
     GLuint Uniform = glGetUniformLocation(m_Program, pszName);
     glUniform3fv(Uniform, 1, glm::value_ptr(Value));
+    CHECK_GL_ERROR();
+}
+
+void CRenderer::setProgramUniform(const char *pszName, const glm::vec4 &Value)
+{
+    GLuint Uniform = glGetUniformLocation(m_Program, pszName);
+    glUniform4fv(Uniform, 1, glm::value_ptr(Value));
     CHECK_GL_ERROR();
 }
 

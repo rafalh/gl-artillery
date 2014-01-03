@@ -7,7 +7,7 @@ layout(location = 2) in vec2 VertexUV;
 layout(location = 3) in uint VertexClr;
 
 // Size of texture used for rendering
-uniform mat3 NormalMatrix;
+uniform mat4 ModelMatrix;
 uniform mat4 MVP;
 uniform vec3 EyePos;
 
@@ -19,10 +19,9 @@ out vec3 FragmentPos;
 
 void main()
 {
-	vec4 v = vec4(VertexPos, 1);
-	gl_Position = MVP * v;
-	FragmentPos = VertexPos;
-	FragmentNormal = NormalMatrix * VertexNormal;
+	gl_Position = MVP * vec4(VertexPos, 1);
+	FragmentPos = (ModelMatrix * vec4(VertexPos, 1)).xyz;
+	FragmentNormal = normalize(mat3(ModelMatrix) * VertexNormal);
 	FragmentUV = VertexUV;
 	FragmentColor.r = ((VertexClr >> 16u) & 0xFFu) / 255.0f;
 	FragmentColor.g = ((VertexClr >> 8u) & 0xFFu) / 255.0f;

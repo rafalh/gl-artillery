@@ -19,7 +19,7 @@ class CGeometryBuilder
         void addBox(const glm::vec3 Vertices[8]);
         void addPolygon(const glm::vec3 Vertices[], unsigned Count);
         void addPolygon(const glm::vec3 Vertices[], unsigned VertCount, const uint16_t Indices[], unsigned IndCount);
-        CMesh *createMesh();
+        CMesh *createMesh(bool bDebug = false);
         void switchVerticesOrder();
         
         void removeAllVertices()

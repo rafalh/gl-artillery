@@ -2,6 +2,8 @@
 #include "CLogger.h"
 #include "CMesh.h"
 
+using namespace glm;
+
 const float PI = 3.141592;
 
 CGeometryBuilder::CGeometryBuilder():
@@ -10,16 +12,16 @@ CGeometryBuilder::CGeometryBuilder():
 void CGeometryBuilder::addQuad(const glm::vec3 &v1, const glm::vec3 &v2, const glm::vec3 &v3, const glm::vec3 &v4)
 {
     unsigned BaseIdx = m_Vertices.size();
-    glm::vec3 A = transformVec3(v1);
-    glm::vec3 B = transformVec3(v2);
-    glm::vec3 C = transformVec3(v3);
-    glm::vec3 D = transformVec3(v4);
+    vec3 A = transformVec3(v1);
+    vec3 B = transformVec3(v2);
+    vec3 C = transformVec3(v3);
+    vec3 D = transformVec3(v4);
     
-    glm::vec3 Normal = glm::normalize(glm::cross(C - B, A - B));
-    m_Vertices.push_back(SVertex(A, Normal, glm::vec2(0.0f, 0.0f), m_Color));
-    m_Vertices.push_back(SVertex(B, Normal, glm::vec2(1.0f, 0.0f), m_Color));
-    m_Vertices.push_back(SVertex(C, Normal, glm::vec2(1.0f, 1.0f), m_Color));
-    m_Vertices.push_back(SVertex(D, Normal, glm::vec2(0.0f, 1.0f), m_Color));
+    vec3 Normal = normalize(cross(C - B, A - B));
+    m_Vertices.push_back(SVertex(A, Normal, vec2(0.0f, 0.0f), m_Color));
+    m_Vertices.push_back(SVertex(B, Normal, vec2(1.0f, 0.0f), m_Color));
+    m_Vertices.push_back(SVertex(C, Normal, vec2(1.0f, 1.0f), m_Color));
+    m_Vertices.push_back(SVertex(D, Normal, vec2(0.0f, 1.0f), m_Color));
     
     m_Indices.push_back(BaseIdx + 0);
     m_Indices.push_back(BaseIdx + 1);
@@ -131,7 +133,7 @@ unsigned CGeometryBuilder::getIcosphereMiddlePoint(unsigned Index1, unsigned Ind
     
     const SVertex &v1 = m_Vertices[Index1];
     const SVertex &v2 = m_Vertices[Index2];
-    glm::vec3 Pos = glm::normalize(v1.Pos + v2.Pos);
+    vec3 Pos = normalize(v1.Pos + v2.Pos);
     unsigned Idx = addSphereVertex(Pos);
     MiddlePoints.insert(std::make_pair(Hash, Idx));
     return Idx;
@@ -139,7 +141,7 @@ unsigned CGeometryBuilder::getIcosphereMiddlePoint(unsigned Index1, unsigned Ind
 
 unsigned CGeometryBuilder::addSphereVertex(const glm::vec3 &Pos)
 {
-    glm::vec2 uv;
+    vec2 uv;
     uv.x = atan2f(Pos.x, Pos.z) / (2.0f * PI);
     uv.y = asinf(Pos.y) / PI + 0.5f;
     SVertex v(Pos, Pos, uv, m_Color);
@@ -163,13 +165,13 @@ void CGeometryBuilder::addCylinder(float Radius, bool Inside, unsigned Segments)
     for(unsigned i = 0; i < Segments; ++i)
     {
         float Angle = (i / (float)Segments) * 2.0f * PI;
-        glm::vec3 Pos(cosf(Angle), 0.0f, sinf(Angle));
-        glm::vec3 Normal = m_TransformNormal * (Inside ? -Pos : Pos);
+        vec3 Pos(cosf(Angle), 0.0f, sinf(Angle));
+        vec3 Normal = normalize(m_TransformNormal * (Inside ? -Pos : Pos));
         Pos *= Radius;
         
         unsigned CurIdx = m_Vertices.size();
-        m_Vertices.push_back(SVertex(transformVec3(Pos.x, -1.0f, Pos.z), Normal, glm::vec2(), m_Color));
-        m_Vertices.push_back(SVertex(transformVec3(Pos.x,  1.0f, Pos.z), Normal, glm::vec2(), m_Color));
+        m_Vertices.push_back(SVertex(transformVec3(Pos.x, -1.0f, Pos.z), Normal, vec2(), m_Color));
+        m_Vertices.push_back(SVertex(transformVec3(Pos.x,  1.0f, Pos.z), Normal, vec2(), m_Color));
         
         if(!Inside)
         {
@@ -201,25 +203,25 @@ void CGeometryBuilder::addTube(float RadiusIn, float RadiusOut, unsigned Segment
     addCylinder(RadiusIn, true, Segments);
     addCylinder(RadiusOut, false, Segments);
     
-    glm::vec3 NormalTop = m_TransformNormal * glm::vec3(0.0f, 1.0f, 0.0f);
-    glm::vec3 NormalBottom = m_TransformNormal * glm::vec3(0.0f, -1.0f, 0.0f);
+    vec3 NormalTop = normalize(m_TransformNormal * vec3(0.0f, 1.0f, 0.0f));
+    vec3 NormalBottom = normalize(m_TransformNormal * vec3(0.0f, -1.0f, 0.0f));
     
     unsigned PrevIdx = m_Vertices.size() + 4 * (Segments - 1);
     
     for(unsigned i = 0; i < Segments; ++i)
     {
         float Angle = (i / (float)Segments) * 2.0f * PI;
-        glm::vec3 Pos(cosf(Angle), 0.0f, sinf(Angle));
-        glm::vec3 PosTopIn = transformVec3(Pos.x * RadiusIn, 1.0f, Pos.z * RadiusIn);
-        glm::vec3 PosTopOut = transformVec3(Pos.x * RadiusOut, 1.0f, Pos.z * RadiusOut);
-        glm::vec3 PosBottomIn = transformVec3(Pos.x * RadiusIn, -1.0f, Pos.z * RadiusIn);
-        glm::vec3 PosBottomOut = transformVec3(Pos.x * RadiusOut, -1.0f, Pos.z * RadiusOut);
+        vec3 Pos(cosf(Angle), 0.0f, sinf(Angle));
+        vec3 PosTopIn = transformVec3(Pos.x * RadiusIn, 1.0f, Pos.z * RadiusIn);
+        vec3 PosTopOut = transformVec3(Pos.x * RadiusOut, 1.0f, Pos.z * RadiusOut);
+        vec3 PosBottomIn = transformVec3(Pos.x * RadiusIn, -1.0f, Pos.z * RadiusIn);
+        vec3 PosBottomOut = transformVec3(Pos.x * RadiusOut, -1.0f, Pos.z * RadiusOut);
         
         unsigned CurIdx = m_Vertices.size();
-        m_Vertices.push_back(SVertex(PosTopIn, NormalTop, glm::vec2(), m_Color));
-        m_Vertices.push_back(SVertex(PosTopOut, NormalTop, glm::vec2(), m_Color));
-        m_Vertices.push_back(SVertex(PosBottomIn, NormalBottom, glm::vec2(), m_Color));
-        m_Vertices.push_back(SVertex(PosBottomOut, NormalBottom, glm::vec2(), m_Color));
+        m_Vertices.push_back(SVertex(PosTopIn, NormalTop, vec2(), m_Color));
+        m_Vertices.push_back(SVertex(PosTopOut, NormalTop, vec2(), m_Color));
+        m_Vertices.push_back(SVertex(PosBottomIn, NormalBottom, vec2(), m_Color));
+        m_Vertices.push_back(SVertex(PosBottomOut, NormalBottom, vec2(), m_Color));
         
         // Top
         m_Indices.push_back(CurIdx + 0);
@@ -250,7 +252,7 @@ void CGeometryBuilder::addTorus(float Radius, float CircleRadius, unsigned Segme
     for(unsigned i = 0; i < Segments; ++i)
     {
         float Angle = (i / (float)Segments) * 2.0f * PI;
-        glm::mat4 Rot = glm::rotate(glm::mat4(1.0f), Angle / (2.0f*PI) * 360.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+        mat4 Rot = rotate(mat4(), Angle / (2.0f*PI) * 360.0f, vec3(0.0f, 1.0f, 0.0f));
         
         unsigned CurCircleIdx = m_Vertices.size();
         unsigned PrevIdx = m_Vertices.size() + (Segments - 1);
@@ -258,11 +260,11 @@ void CGeometryBuilder::addTorus(float Radius, float CircleRadius, unsigned Segme
         for(unsigned j = 0; j < CircleSegments; ++j)
         {
             float Angle2 = (j / (float)CircleSegments) * 2.0f * PI;
-            glm::vec3 Pos(Rot * glm::vec4(Radius + cosf(Angle2) * CircleRadius, sinf(Angle2) * CircleRadius, 0.0f, 1.0f));
-            glm::vec3 Normal(Rot * glm::vec4(cosf(Angle2), sinf(Angle2), 0.0f, 1.0f));
+            vec3 Pos(Rot * vec4(Radius + cosf(Angle2) * CircleRadius, sinf(Angle2) * CircleRadius, 0.0f, 1.0f));
+            vec3 Normal(Rot * vec4(cosf(Angle2), sinf(Angle2), 0.0f, 1.0f));
             
             unsigned CurIdx = m_Vertices.size();
-            m_Vertices.push_back(SVertex(transformVec3(Pos), m_TransformNormal * Normal, glm::vec2(), m_Color));
+            m_Vertices.push_back(SVertex(transformVec3(Pos), normalize(m_TransformNormal * Normal), vec2(), m_Color));
             
             m_Indices.push_back(CurIdx);
             m_Indices.push_back(PrevIdx - CurCircleIdx + PrevCircleIdx);
@@ -281,13 +283,13 @@ void CGeometryBuilder::addTorus(float Radius, float CircleRadius, unsigned Segme
 
 void CGeometryBuilder::addBox()
 {
-    glm::vec3 Top[] = {
+    vec3 Top[] = {
         { 1.0f, 1.0f, -1.0f},
         { 1.0f, 1.0f,  1.0f},
         {-1.0f, 1.0f,  1.0f},
         {-1.0f, 1.0f, -1.0f},
     };
-    glm::vec3 Bottom[] = {
+    vec3 Bottom[] = {
         { 1.0f, -1.0f, -1.0f},
         { 1.0f, -1.0f,  1.0f},
         {-1.0f, -1.0f,  1.0f},
@@ -314,11 +316,11 @@ void CGeometryBuilder::addBox(const glm::vec3 Vertices[8])
 void CGeometryBuilder::addPolygon(const glm::vec3 Positions[], unsigned Count)
 {
     unsigned BaseIdx = m_Vertices.size();
-    glm::vec3 Normal = glm::normalize(glm::cross(Positions[2] - Positions[1], Positions[0] - Positions[1]));
+    vec3 Normal = normalize(cross(Positions[2] - Positions[1], Positions[0] - Positions[1]));
     for(unsigned i = 0; i < Count; ++i)
     {
-        glm::vec3 Pos = transformVec3(Positions[i]);
-        m_Vertices.push_back(SVertex(Pos, Normal, glm::vec2(0.0f, 0.0f), m_Color));
+        vec3 Pos = transformVec3(Positions[i]);
+        m_Vertices.push_back(SVertex(Pos, Normal, vec2(0.0f, 0.0f), m_Color));
     }
     
     for(unsigned i = 0; i < Count - 2; ++i)
@@ -332,16 +334,16 @@ void CGeometryBuilder::addPolygon(const glm::vec3 Positions[], unsigned Count)
 void CGeometryBuilder::addPolygon(const glm::vec3 Positions[], unsigned VertCount, const uint16_t Indices[], unsigned IndCount)
 {
     unsigned BaseIdx = m_Vertices.size();
-    glm::vec3 Pos0 = Positions[Indices[0]];
-    glm::vec3 Pos1 = Positions[Indices[1]];
-    glm::vec3 Pos2 = Positions[Indices[2]];
-    glm::vec3 Normal = glm::normalize(m_TransformNormal * glm::cross(Pos2 - Pos1, Pos0 - Pos1));
+    vec3 Pos0 = Positions[Indices[0]];
+    vec3 Pos1 = Positions[Indices[1]];
+    vec3 Pos2 = Positions[Indices[2]];
+    vec3 Normal = normalize(m_TransformNormal * cross(Pos2 - Pos1, Pos0 - Pos1));
     
     m_Vertices.reserve(m_Vertices.size() + VertCount);
     for(unsigned i = 0; i < VertCount; ++i)
     {
-        glm::vec3 Pos = transformVec3(Positions[i]);
-        m_Vertices.push_back(SVertex(Pos, Normal, glm::vec2(0.0f, 0.0f), m_Color));
+        vec3 Pos = transformVec3(Positions[i]);
+        m_Vertices.push_back(SVertex(Pos, Normal, vec2(0.0f, 0.0f), m_Color));
     }
     
     m_Indices.reserve(m_Indices.size() + IndCount);
@@ -358,7 +360,7 @@ void CGeometryBuilder::addVertices(const std::vector<SVertex> &Vertices, const s
     {
         m_Vertices.push_back(v);
         m_Vertices.back().Pos = transformVec3(m_Vertices.back().Pos);
-        m_Vertices.back().Normal = m_TransformNormal * m_Vertices.back().Normal;
+        m_Vertices.back().Normal = normalize(m_TransformNormal * m_Vertices.back().Normal);
     }
     
     m_Indices.reserve(m_Indices.size() + Indices.size());
@@ -366,9 +368,9 @@ void CGeometryBuilder::addVertices(const std::vector<SVertex> &Vertices, const s
         m_Indices.push_back(Offset + Idx);
 }
 
-CMesh *CGeometryBuilder::createMesh()
+CMesh *CGeometryBuilder::createMesh(bool bDebug)
 {
-    CMesh *pMesh = new CMesh;
+    CMesh *pMesh = new CMesh(bDebug);
     pMesh->setVertices(m_Vertices.data(), m_Vertices.size());
     pMesh->setIndices(m_Indices.data(), m_Indices.size());
     return pMesh;

@@ -17,7 +17,7 @@ CCannon::CCannon(const glm::vec3 &Pos, CRenderer *pRenderer):
     prepareLauncher();
     
     m_Transform = translate(mat4(), Pos);
-    m_Transform = rotate(m_Transform, -45.0f, vec3(0.0f, 1.0f, 0.0f));
+    m_Transform = rotate(m_Transform, -45.0f, vec3(0.0f, 1.0f, 0.0f));// * scale(mat4(), vec3(10.0f, 10.0f, 10.0f));
 }
 
 CCannon::~CCannon()
@@ -29,6 +29,11 @@ CCannon::~CCannon()
 void CCannon::render()
 {
     m_pRenderer->setTexture(0);
+    m_pRenderer->setProgramUniform("MaterialAmbientColor", vec3(0.1f, 0.1f, 0.1f));
+    //m_pRenderer->setProgramUniform("MaterialDiffuseColor", vec3(0.0f, 0.0f, 0.0f));
+    m_pRenderer->setProgramUniform("MaterialDiffuseColor", vec3(1.0f, 1.0f, 1.0f));
+    m_pRenderer->setProgramUniform("MaterialSpecularColor", vec3(0.3f, 0.3f, 0.3f));
+    m_pRenderer->setProgramUniform("MaterialShininess", 64.0f);
     
     //mat4 Rot = rotate(mat4(), 45.0f, vec3(1.0f, 0.0f, 0.0f));
     mat4 FloatingTrans = translate(mat4(), vec3(0.0f, sinf(glfwGetTime() * 3.0f) * 0.1f, 0.0f));

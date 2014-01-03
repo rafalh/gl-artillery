@@ -2,9 +2,10 @@
 #include "CMesh.h"
 #include "utils.h"
 
-CMesh::CMesh():
+CMesh::CMesh(bool bDrawNormals):
     m_VertexArray(0),
-    m_VertexBuf(0), m_ElementBuf(0)
+    m_VertexBuf(0), m_ElementBuf(0),
+    m_bDrawNormals(bDrawNormals)
 {
     // Create Vertex Array Object
     glGenVertexArrays(1, &m_VertexArray);
@@ -32,7 +33,25 @@ void CMesh::setVertices(const SVertex *pVertices, unsigned Count)
     glBindVertexArray(m_VertexArray);
     glGenBuffers(1, &m_VertexBuf);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuf);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(SVertex) * Count, pVertices, GL_STATIC_DRAW);
+	m_VerticesCount = Count;
+    
+    if(m_bDrawNormals)
+    {
+        SVertex *pTemp = new SVertex[3*Count];
+        memcpy(pTemp, pVertices, Count * sizeof(SVertex));
+        for(unsigned i = 0; i < Count; ++i)
+        {
+            pTemp[Count + i*2] = pTemp[i];
+            pTemp[Count + i*2 + 1] = pTemp[i];
+            pTemp[Count + i*2 + 1].Pos += pTemp[Count + i*2 + 1].Normal * 0.1f;
+        }
+            
+        glBufferData(GL_ARRAY_BUFFER, sizeof(SVertex) * 3 * Count, pTemp, GL_STATIC_DRAW);
+        delete[] pTemp;
+    }
+    else
+        glBufferData(GL_ARRAY_BUFFER, sizeof(SVertex) * Count, pVertices, GL_STATIC_DRAW);
+    
 	CHECK_GL_ERROR();
 	
 	// Position
@@ -108,6 +127,8 @@ void CMesh::render()
     // Draw triangles
     glBindVertexArray(m_VertexArray);
 	glDrawElements(GL_TRIANGLES, m_IndicesCount, m_IndexType, nullptr);
+	if(m_bDrawNormals)
+	    glDrawArrays(GL_LINES, m_VerticesCount, 2 * m_VerticesCount);
 	CHECK_GL_ERROR();
 }
 

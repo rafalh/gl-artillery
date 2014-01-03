@@ -68,6 +68,11 @@ void CCity::render()
     if(!m_pMesh)
         build();
     
+    m_pRenderer->setProgramUniform("MaterialAmbientColor", vec3(0.2f, 0.2f, 0.2f));
+    m_pRenderer->setProgramUniform("MaterialDiffuseColor", vec3(1.0f, 1.0f, 1.0f));
+    m_pRenderer->setProgramUniform("MaterialSpecularColor", vec3(0.2f, 0.2f, 0.2f));
+    m_pRenderer->setProgramUniform("MaterialShininess", 8.0f);
+    
     m_pRenderer->setModelTransform(m_Transform);
     m_pRenderer->setTexture(CTextureMgr::getInstance().get("textures/concrete.jpg"));
     m_pMesh->render();
