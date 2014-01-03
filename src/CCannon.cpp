@@ -14,7 +14,8 @@ static const float PI = 3.141592f;
 CCannon::CCannon(const glm::vec3 &Pos, CRenderer *pRenderer):
     m_pRenderer(pRenderer),
     m_pMesh(nullptr),
-    m_ShotTime(0.0f)
+    m_ShotTime(0.0f),
+    m_AngleX(0), m_AngleY(0)
 {
     CGeometryBuilder Builder;
     Builder.setColor(0xFF337799);
@@ -34,6 +35,11 @@ CCannon::~CCannon()
 
 void CCannon::render()
 {
+    if(glfwGetTime() > m_ShotTime + 3.0f)
+        shoot();
+    m_AngleX = (sinf(glfwGetTime()) + 1.0f)/2.0f * 20.0f;
+    m_AngleY = sinf(glfwGetTime()*0.3f) * 30.0f;
+    
     m_pRenderer->setTexture(0);
     m_pRenderer->setProgramUniform("MaterialAmbientColor", vec3(0.1f, 0.1f, 0.1f));
     m_pRenderer->setProgramUniform("MaterialDiffuseColor", vec3(1.0f, 1.0f, 1.0f));
@@ -43,13 +49,10 @@ void CCannon::render()
     float ShotDelta = glfwGetTime() - m_ShotTime;
     float ShotProgress = ShotDelta > SHOT_TIME ? 0.0f : (ShotDelta / SHOT_TIME);
     
-    mat4 RotationX = rotate(mat4(), (sinf(glfwGetTime()) + 1.0f)/2.0f * 20.0f, vec3(-1.0f, 0.0f, 0.0f));
-    mat4 RotationY = rotate(mat4(), sinf(glfwGetTime()*0.3f) * 15.0f, vec3(0.0f, -1.0f, 0.0f));
-    
     mat4 BaseTransform = m_Transform * translate(mat4(), vec3(0.0f, sinf(glfwGetTime() * 3.0f) * 0.1f, 0.0f));
-    mat4 RotatorTransform = RotationY * translate(mat4(), vec3(0.0f, 0.9f, 0.9f));
-    mat4 FrontGunTransform = RotationY * translate(mat4(), vec3(0.0f, 2.0f, -0.6f + 1.5f));
-    mat4 BackGunTransform = RotationY * translate(mat4(), vec3(0.0f, 2.0f, -0.6f + 1.5f));
+    mat4 RotatorTransform = translate(mat4(), vec3(0.0f, 0.9f, 0.9f));
+    mat4 FrontGunTransform = translate(mat4(), vec3(0.0f, 2.0f, -0.6f + 1.5f));
+    mat4 BackGunTransform = translate(mat4(), vec3(0.0f, 2.0f, -0.6f + 1.5f));
     
     if(ShotProgress < 0.15f) // 0.00 - 0.15 ms
         FrontGunTransform = FrontGunTransform * translate(mat4(), vec3(0.0f, 0.0f, -sinf(ShotProgress/0.15f * PI/2.0f)));
@@ -65,7 +68,13 @@ void CCannon::render()
     else // 0.25 - 1.00 ms
         BackGunTransform = BackGunTransform * translate(mat4(), vec3(0.0f, 0.0f, -0.5f + 0.5f * (ShotProgress-0.25f)/0.75f));
     
+    mat4 RotationX = rotate(mat4(), m_AngleX, vec3(-1.0f, 0.0f, 0.0f));
     RotationX = translate(mat4(), vec3(0.0f, 0.2f, -0.1f)) * RotationX * translate(mat4(), vec3(0.0f, -0.2f, 0.1f));
+    
+    vec3 RotAxisY(RotationX * vec4(0.0f, -1.0f, 0.0f, 0.0f));
+    vec3 RotPosY(RotationX * vec4(0.0f, 0.0f, -0.6f + 1.5f, 1.0f));
+    mat4 RotationY = rotate(mat4(), m_AngleY, RotAxisY);
+    RotationY = translate(mat4(), RotPosY) * RotationY * translate(mat4(), -RotPosY);
     
     m_pRenderer->setModelTransform(BaseTransform * RotationY * RotationX * FrontGunTransform);
     m_pMesh->render(m_FrontGun);
@@ -82,9 +91,6 @@ void CCannon::render()
     
     m_pRenderer->setModelTransform(BaseTransform);
     m_pMesh->render(m_CannonBase);
-    
-    if(glfwGetTime() > m_ShotTime + 3.0f)
-        shoot();
 }
 
 void CCannon::prepareBase(CGeometryBuilder &Builder)

@@ -20,6 +20,7 @@ class CCannon: public CSceneNode
         CMesh *m_pMesh;
         glm::mat4 m_Transform;
         float m_ShotTime;
+        float m_AngleX, m_AngleY;
         const float SHOT_TIME = 2.0f;
         CMesh::SOffsetSize m_CannonBase, m_BarrelBase, m_FrontGun, m_BackGun, m_RotatorX, m_RotatorY;
         
