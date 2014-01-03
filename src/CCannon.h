@@ -21,7 +21,7 @@ class CCannon: public CSceneNode
         glm::mat4 m_Transform;
         float m_ShotTime;
         const float SHOT_TIME = 2.0f;
-        CMesh::SOffsetSize m_CannonBase, m_FrontGun, m_BackGun, m_Rotator;
+        CMesh::SOffsetSize m_CannonBase, m_BarrelBase, m_FrontGun, m_BackGun, m_RotatorX, m_RotatorY;
         
         void prepareBase(CGeometryBuilder &Builder);
         void prepareLauncher(CGeometryBuilder &Builder);

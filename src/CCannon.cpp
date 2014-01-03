@@ -40,25 +40,16 @@ void CCannon::render()
     m_pRenderer->setProgramUniform("MaterialSpecularColor", vec3(0.3f, 0.3f, 0.3f));
     m_pRenderer->setProgramUniform("MaterialShininess", 64.0f);
     
-    float dt = glfwGetTime() - m_ShotTime;
-    float ShotProgress = dt > SHOT_TIME ? 0.0f : (dt / SHOT_TIME);
-    float ShotPhases[] = {0.1f, 0.05f, 0.85f};
-    unsigned ShotPhase = 0;
-    float ShotPhaseProgress = ShotProgress;
-    while(ShotPhaseProgress > ShotPhases[ShotPhase])
-    {
-        ShotPhaseProgress -= ShotPhases[ShotPhase];
-        ++ShotPhase;
-    }
-    ShotPhaseProgress /= ShotPhases[ShotPhase];
+    float ShotDelta = glfwGetTime() - m_ShotTime;
+    float ShotProgress = ShotDelta > SHOT_TIME ? 0.0f : (ShotDelta / SHOT_TIME);
     
-    //mat4 RotationX = rotate(mat4(), 15.0f, vec3(0.0f, 1.0f, 0.0f));
-    mat4 RotationY = rotate(mat4(), 0.0f, vec3(0.0f, 1.0f, 0.0f));
+    mat4 RotationX = rotate(mat4(), (sinf(glfwGetTime()) + 1.0f)/2.0f * 20.0f, vec3(-1.0f, 0.0f, 0.0f));
+    mat4 RotationY = rotate(mat4(), sinf(glfwGetTime()*0.3f) * 15.0f, vec3(0.0f, -1.0f, 0.0f));
     
     mat4 BaseTransform = m_Transform * translate(mat4(), vec3(0.0f, sinf(glfwGetTime() * 3.0f) * 0.1f, 0.0f));
-    mat4 RotatorTransform = translate(mat4(), vec3(0.0f, 0.9f, 0.9f)) * RotationY;
-    mat4 FrontGunTransform = translate(mat4(), vec3(0.0f, 2.0f, -0.6f + 1.5f)) * RotationY;
-    mat4 BackGunTransform = translate(mat4(), vec3(0.0f, 2.0f, -0.6f + 1.5f)) * RotationY;
+    mat4 RotatorTransform = RotationY * translate(mat4(), vec3(0.0f, 0.9f, 0.9f));
+    mat4 FrontGunTransform = RotationY * translate(mat4(), vec3(0.0f, 2.0f, -0.6f + 1.5f));
+    mat4 BackGunTransform = RotationY * translate(mat4(), vec3(0.0f, 2.0f, -0.6f + 1.5f));
     
     if(ShotProgress < 0.15f) // 0.00 - 0.15 ms
         FrontGunTransform = FrontGunTransform * translate(mat4(), vec3(0.0f, 0.0f, -sinf(ShotProgress/0.15f * PI/2.0f)));
@@ -74,13 +65,20 @@ void CCannon::render()
     else // 0.25 - 1.00 ms
         BackGunTransform = BackGunTransform * translate(mat4(), vec3(0.0f, 0.0f, -0.5f + 0.5f * (ShotProgress-0.25f)/0.75f));
     
-    m_pRenderer->setModelTransform(BaseTransform * FrontGunTransform);
+    RotationX = translate(mat4(), vec3(0.0f, 0.2f, -0.1f)) * RotationX * translate(mat4(), vec3(0.0f, -0.2f, 0.1f));
+    
+    m_pRenderer->setModelTransform(BaseTransform * RotationY * RotationX * FrontGunTransform);
     m_pMesh->render(m_FrontGun);
-    m_pRenderer->setModelTransform(BaseTransform * BackGunTransform);
+    
+    m_pRenderer->setModelTransform(BaseTransform * RotationY * RotationX * BackGunTransform);
     m_pMesh->render(m_BackGun);
     
-    m_pRenderer->setModelTransform(BaseTransform * RotatorTransform);
-    m_pMesh->render(m_Rotator);
+    m_pRenderer->setModelTransform(BaseTransform * RotationY * RotationX * RotatorTransform);
+    m_pMesh->render(m_RotatorY);
+    
+    m_pRenderer->setModelTransform(BaseTransform * RotationX);
+    m_pMesh->render(m_BarrelBase);
+    m_pMesh->render(m_RotatorX);
     
     m_pRenderer->setModelTransform(BaseTransform);
     m_pMesh->render(m_CannonBase);
@@ -215,6 +213,7 @@ void CCannon::prepareBase(CGeometryBuilder &Builder)
     };
     Builder.setTransform(mat4());
     Builder.addBox(CenterSideCon);
+    m_CannonBase = Builder.subMesh();
     
     // Launcher base - center axle connector
     vec3 LauncherAxleCon[] = {
@@ -222,13 +221,14 @@ void CCannon::prepareBase(CGeometryBuilder &Builder)
         { 0.4f,  0.2f, -0.0f},
         {-0.4f,  0.2f, -0.0f},
         {-0.4f,  0.2f,  2.5f},
-        { 0.4f,  0.0f,  2.5f},
-        { 0.4f,  0.0f, -0.0f},
-        {-0.4f,  0.0f, -0.0f},
-        {-0.4f,  0.0f,  2.5f},
+        { 0.4f, -1.0f,  2.5f},
+        { 0.4f, -0.2f, -0.0f},
+        {-0.4f, -0.2f, -0.0f},
+        {-0.4f, -1.0f,  2.5f},
     };
     Builder.setTransform(mat4());
     Builder.addBox(LauncherAxleCon);
+    m_RotatorX = Builder.subMesh();
     
     // Launcher Base
     vec3 LauncherBase[] = {
@@ -243,8 +243,8 @@ void CCannon::prepareBase(CGeometryBuilder &Builder)
     };
     Builder.setTransform(mat4());
     Builder.addBox(LauncherBase);
-    m_CannonBase = Builder.subMesh();
-
+    m_BarrelBase = Builder.subMesh();
+    
     // Launcher rotator
     vec3 LauncherRotator[] = {
         { 1.0f,  0.1f,  1.1f},
@@ -258,7 +258,7 @@ void CCannon::prepareBase(CGeometryBuilder &Builder)
     };
     Builder.setTransform(mat4());
     Builder.addBox(LauncherRotator);
-    m_Rotator = Builder.subMesh();
+    m_RotatorY = Builder.subMesh();
 }
 
 void CCannon::prepareLauncher(CGeometryBuilder &Builder)
