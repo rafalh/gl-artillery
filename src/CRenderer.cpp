@@ -4,6 +4,7 @@
 #include "CException.h"
 #include "CInputHandler.h"
 #include "CTextureMgr.h"
+#include "SMaterial.h"
 #include "utils.h"
 
 using namespace std;
@@ -182,6 +183,15 @@ void CRenderer::setModelTransform(const glm::mat4 &ModelMat, bool bSkybox)
     glUniformMatrix4fv(Uniform, 1, GL_FALSE, glm::value_ptr(ModelMat));
     
     CHECK_GL_ERROR();
+}
+
+void CRenderer::setMaterial(const SMaterial &Mat)
+{
+    setTexture(Mat.Texture);
+    setProgramUniform("MaterialAmbientColor", Mat.AmbientColor);
+    setProgramUniform("MaterialDiffuseColor", Mat.DiffuseColor);
+    setProgramUniform("MaterialSpecularColor", Mat.SpecularColor);
+    setProgramUniform("MaterialShininess", Mat.Shininess);
 }
 
 void CRenderer::setTexture(GLuint Texture)

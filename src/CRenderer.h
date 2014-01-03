@@ -5,6 +5,7 @@
 #include "CException.h"
 
 class CInputHandler;
+struct SMaterial;
 
 class CRenderer
 {
@@ -66,6 +67,7 @@ class CRenderer
         void setProgramUniform(const char *pszName, float Value);
         void setInputHandler(CInputHandler *pHandler);
         void setDoubleSided(bool DoubleSided);
+        void setMaterial(const SMaterial &Mat);
         
         void toggleWireframe()
         {

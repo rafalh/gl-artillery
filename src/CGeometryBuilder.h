@@ -35,9 +35,11 @@ class CGeometryBuilder
             return m_Color;
         }
         
-        void setColor(uint32_t Color)
+        uint32_t setColor(uint32_t Color)
         {
+            uint32_t Ret = m_Color;
             m_Color = Color;
+            return Ret;
         }
         
         const std::vector<SVertex> &getVertices() const

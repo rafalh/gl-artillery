@@ -4,6 +4,7 @@
 #include "CRenderer.h"
 #include "CGeometryBuilder.h"
 #include "CTextureMgr.h"
+#include "SMaterial.h"
 #include "CLogger.h"
 #include "utils.h"
 
@@ -17,6 +18,17 @@ CCannon::CCannon(const glm::vec3 &Pos, CRenderer *pRenderer):
     m_ShotTime(0.0f),
     m_AngleX(0), m_AngleY(0)
 {
+    m_CannonMaterial.AmbientColor = vec3(0.1f, 0.1f, 0.1f);
+    m_CannonMaterial.DiffuseColor = vec3(1.0f, 1.0f, 1.0f);
+    m_CannonMaterial.SpecularColor = vec3(0.3f, 0.3f, 0.3f);
+    m_CannonMaterial.Shininess = 64.0f;
+    
+    m_DisabledRingMaterial.AmbientColor = vec3(0.1f, 0.1f, 0.1f);
+    m_DisabledRingMaterial.DiffuseColor = vec3(0.6f, 0.1f, 0.1f);
+    
+    m_EnabledRingMaterial.AmbientColor = vec3(0.6f, 0.1f, 0.1f);
+    m_EnabledRingMaterial.DiffuseColor = vec3(0.4f, 0.0f, 0.0f);
+    
     CGeometryBuilder Builder;
     Builder.setColor(0xFF337799);
     
@@ -35,16 +47,12 @@ CCannon::~CCannon()
 
 void CCannon::render()
 {
-    if(glfwGetTime() > m_ShotTime + 3.0f)
+    if(glfwGetTime() > m_ShotTime + 4.0f)
         shoot();
     m_AngleX = (sinf(glfwGetTime()) + 1.0f)/2.0f * 20.0f;
     m_AngleY = sinf(glfwGetTime()*0.3f) * 30.0f;
     
-    m_pRenderer->setTexture(0);
-    m_pRenderer->setProgramUniform("MaterialAmbientColor", vec3(0.1f, 0.1f, 0.1f));
-    m_pRenderer->setProgramUniform("MaterialDiffuseColor", vec3(1.0f, 1.0f, 1.0f));
-    m_pRenderer->setProgramUniform("MaterialSpecularColor", vec3(0.3f, 0.3f, 0.3f));
-    m_pRenderer->setProgramUniform("MaterialShininess", 64.0f);
+    m_pRenderer->setMaterial(m_CannonMaterial);
     
     float ShotDelta = glfwGetTime() - m_ShotTime;
     float ShotProgress = ShotDelta > SHOT_TIME ? 0.0f : (ShotDelta / SHOT_TIME);
@@ -79,6 +87,17 @@ void CCannon::render()
     m_pRenderer->setModelTransform(BaseTransform * RotationY * RotationX * FrontGunTransform);
     m_pMesh->render(m_FrontGun);
     
+    unsigned ShiningRings = std::min((unsigned)(ShotDelta * 2.0f), m_BarrelRings.size());
+    if(ShiningRings > 0)
+        m_pRenderer->setMaterial(m_EnabledRingMaterial);
+    for(unsigned i = 0; i < ShiningRings; ++i)
+        m_pMesh->render(m_BarrelRings[i]);
+    if(ShiningRings < m_BarrelRings.size())
+        m_pRenderer->setMaterial(m_DisabledRingMaterial);
+    for(unsigned i = ShiningRings; i < m_BarrelRings.size(); ++i)
+        m_pMesh->render(m_BarrelRings[i]);
+    
+    m_pRenderer->setMaterial(m_CannonMaterial);
     m_pRenderer->setModelTransform(BaseTransform * RotationY * RotationX * BackGunTransform);
     m_pMesh->render(m_BackGun);
     
@@ -277,15 +296,18 @@ void CCannon::prepareLauncher(CGeometryBuilder &Builder)
     Builder.setTransform(Trans2 * Scale2 * Rot);
     Builder.addTube(0.35f, 0.40f, 20);
     
+    m_FrontGun = Builder.subMesh();
+    
     // Rings
+    uint32_t OldColor = Builder.setColor(0xFFFFFFFF);
     for(unsigned i = 0; i < 6; ++i)
     {
         mat4 RingTrans = translate(mat4(), vec3(0.0f, 0.0f, 5.5f + i * 0.3f));
         Builder.setTransform(RingTrans * Rot);
         Builder.addTorus(0.5f, 0.05f, 20, 20);
+        m_BarrelRings.push_back(Builder.subMesh());
     }
-    
-    m_FrontGun = Builder.subMesh();
+    Builder.setColor(OldColor);
     
     // Larger tube
     mat4 Scale1 = scale(mat4(), vec3(1.0f, 1.0f, 2.0f));

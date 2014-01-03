@@ -2,6 +2,7 @@
 #define CHEIGHTMAP_H
 
 #include "CSceneNode.h"
+#include "SMaterial.h"
 
 class CRenderer;
 class CMesh;
@@ -17,7 +18,7 @@ class CHeightMap: public CSceneNode
         
     private:
         CMesh *m_pMesh;
-        GLuint m_Texture;
+        SMaterial m_Material;
         CRenderer *m_pRenderer;
         CImage *m_pImage;
 };

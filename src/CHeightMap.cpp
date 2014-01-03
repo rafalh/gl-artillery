@@ -10,7 +10,6 @@ using namespace glm;
 
 CHeightMap::CHeightMap(const std::string &Path, CRenderer *pRenderer):
     m_pMesh(nullptr),
-    m_Texture(0),
     m_pRenderer(pRenderer)
 {
     m_pImage = new CImage(Path.c_str());
@@ -110,7 +109,11 @@ void CHeightMap::build()
     delete m_pImage;
     m_pImage = nullptr;
     
-    m_Texture = CTextureMgr::getInstance().get("textures/desert.jpg");
+    m_Material.Texture = CTextureMgr::getInstance().get("textures/desert.jpg");
+    m_Material.AmbientColor = vec3(0.2f, 0.2f, 0.2f);
+    m_Material.DiffuseColor = vec3(1.0f, 1.0f, 1.0f);
+    m_Material.SpecularColor = vec3(0.0f, 0.0f, 0.0f);
+    m_Material.Shininess = 8.0f;
     
     CLogger::getInstance().info("Heightmap %dx%d built in %.2f seconds\n", w, h, glfwGetTime() - StartTime);
 }
@@ -121,12 +124,6 @@ void CHeightMap::render()
         build();
     
     m_pRenderer->setModelTransform(glm::mat4(1.0f));
-    
-    m_pRenderer->setTexture(m_Texture);
-    m_pRenderer->setProgramUniform("MaterialAmbientColor", vec3(0.2f, 0.2f, 0.2f));
-    m_pRenderer->setProgramUniform("MaterialDiffuseColor", vec3(1.0f, 1.0f, 1.0f));
-    m_pRenderer->setProgramUniform("MaterialSpecularColor", vec3(0.0f, 0.0f, 0.0f));
-    m_pRenderer->setProgramUniform("MaterialShininess", 8.0f);
-    
+    m_pRenderer->setMaterial(m_Material);
     m_pMesh->render();
 }

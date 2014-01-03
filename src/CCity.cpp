@@ -10,6 +10,12 @@ CCity::CCity(const glm::vec3 &Pos, CRenderer *pRenderer):
     m_pMesh(nullptr), m_pRenderer(pRenderer)
 {
     m_Transform = translate(mat4(), Pos);
+    
+    m_Material.Texture = CTextureMgr::getInstance().get("textures/concrete.jpg");
+    m_Material.AmbientColor = vec3(0.2f, 0.2f, 0.2f);
+    m_Material.DiffuseColor = vec3(1.0f, 1.0f, 1.0f);
+    m_Material.SpecularColor = vec3(0.2f, 0.2f, 0.2f);
+    m_Material.Shininess = 8.0f;
 }
 
 CCity::~CCity()
@@ -68,12 +74,7 @@ void CCity::render()
     if(!m_pMesh)
         build();
     
-    m_pRenderer->setProgramUniform("MaterialAmbientColor", vec3(0.2f, 0.2f, 0.2f));
-    m_pRenderer->setProgramUniform("MaterialDiffuseColor", vec3(1.0f, 1.0f, 1.0f));
-    m_pRenderer->setProgramUniform("MaterialSpecularColor", vec3(0.2f, 0.2f, 0.2f));
-    m_pRenderer->setProgramUniform("MaterialShininess", 8.0f);
-    
     m_pRenderer->setModelTransform(m_Transform);
-    m_pRenderer->setTexture(CTextureMgr::getInstance().get("textures/concrete.jpg"));
+    m_pRenderer->setMaterial(m_Material);
     m_pMesh->render();
 }
