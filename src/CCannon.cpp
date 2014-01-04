@@ -17,7 +17,8 @@ CCannon::CCannon(const glm::vec3 &Pos, CRenderer *pRenderer):
     m_pRenderer(pRenderer),
     m_pMesh(nullptr), m_pMissile(nullptr),
     m_ShotTime(0.0f),
-    m_AngleX(0), m_AngleY(0)
+    m_AngleX(0), m_AngleY(0),
+    m_MissileVisible(false)
 {
     m_CannonMaterial.AmbientColor = vec3(0.1f, 0.1f, 0.1f);
     m_CannonMaterial.DiffuseColor = vec3(1.0f, 1.0f, 1.0f);
@@ -39,6 +40,10 @@ CCannon::CCannon(const glm::vec3 &Pos, CRenderer *pRenderer):
     
     m_Transform = translate(mat4(), Pos);
     m_Transform = rotate(m_Transform, -45.0f, vec3(0.0f, 1.0f, 0.0f));// * scale(mat4(), vec3(10.0f, 10.0f, 10.0f));
+    
+    m_pMissile = new CMissile(m_pRenderer);
+    
+    m_PrevFrameTime = glfwGetTime();
 }
 
 CCannon::~CCannon()
@@ -47,13 +52,25 @@ CCannon::~CCannon()
     delete m_pMissile;
 }
 
+void CCannon::animate()
+{
+    const float ROT_X_SPEED = 5.0f;
+    const float ROT_Y_SPEED = 5.0f;
+    
+    float dt = glfwGetTime() - m_PrevFrameTime;
+    float SignX = m_DestAngleX > m_AngleX ? 1.0f : -1.0f;
+    float SignY = m_DestAngleY > m_AngleY ? 1.0f : -1.0f;
+    m_AngleX = m_AngleX + SignX * std::min(fabsf(m_DestAngleX - m_AngleX), ROT_X_SPEED * dt);
+    m_AngleY = m_AngleY + SignY * std::min(fabsf(m_DestAngleY - m_AngleY), ROT_Y_SPEED * dt);
+    
+    m_PrevFrameTime = glfwGetTime();
+    
+    if(m_MissileVisible)
+        m_pMissile->animate();
+}
+
 void CCannon::render()
 {
-    if(glfwGetTime() > m_ShotTime + 4.0f)
-        shoot();
-    m_AngleX = (sinf(glfwGetTime()) + 1.0f)/2.0f * 20.0f;
-    m_AngleY = sinf(glfwGetTime()*0.3f) * 30.0f;
-    
     m_pRenderer->setMaterial(m_CannonMaterial);
     
     float ShotDelta = glfwGetTime() - m_ShotTime;
@@ -114,7 +131,7 @@ void CCannon::render()
     m_pRenderer->setModelTransform(BaseTransform);
     m_pMesh->render(m_CannonBase);
     
-    if(m_pMissile)
+    if(m_MissileVisible)
         m_pMissile->render();
 }
 
@@ -358,12 +375,13 @@ void CCannon::prepareLauncher(CGeometryBuilder &Builder)
     m_BackGun = Builder.subMesh();
 }
 
-void CCannon::shoot()
+void CCannon::fire()
 {
-    m_ShotTime = glfwGetTime();
-    delete m_pMissile;
-    
     vec3 StartPos(m_BarrelTransform * vec4(0.0f, 0.0f, 6.0f, 1.0f));
-    vec3 Velocity(mat3(m_BarrelTransform) * vec3(0.0f, 0.0f, 100.0f));
-    m_pMissile = new CMissile(StartPos, Velocity, m_pRenderer);
+    vec3 Velocity(mat3(m_BarrelTransform) * vec3(0.0f, 0.0f, 40.0f));
+    m_pMissile->setVelocity(Velocity);
+    m_pMissile->start(StartPos);
+    m_MissileVisible = true;
+    
+    m_ShotTime = glfwGetTime();
 }

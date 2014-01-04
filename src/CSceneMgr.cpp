@@ -27,6 +27,11 @@ void CSceneMgr::render()
     m_pRenderer->setViewMatrix(m_pCamera->getViewMatrix());
     m_pRenderer->setProgramUniform("EyePos", m_pCamera->getPosition());
     
+    for(CSceneNode *pNode: m_Nodes)
+        pNode->animate();
+    for(CSceneNode *pNode: m_TransparentNodes)
+        pNode->animate();
+    
     glDepthMask(GL_FALSE);
     if(m_pSkybox)
         m_pSkybox->render();

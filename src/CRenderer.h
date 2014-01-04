@@ -18,6 +18,16 @@ class CRenderer
         void setModelTransform(const glm::mat4 &ModelMat, bool bSkybox = false);
         void setTexture(GLuint Texture);
         void clear();
+        
+        void setLightPos(const glm::vec3 &Position)
+        {
+            m_LightPos = Position;
+        }
+        
+        void setLightColor(const glm::vec3 &Color)
+        {
+            m_LightClr = Color;
+        }
 
         void setViewMatrix(const glm::mat4 &View)
         {
@@ -82,6 +92,8 @@ class CRenderer
         CInputHandler *m_pInputHandler;
         GLuint m_Program;
         glm::mat4 m_ViewMatrix, m_ProjMatrix;
+        
+        glm::vec3 m_LightPos, m_LightClr;
         
         static void glfwErrorCallback(int iErrorNum, const char *pszDescription);
         static void onKey(GLFWwindow *pWindow, int Key, int Scancode, int Action, int Mods);

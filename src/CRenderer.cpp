@@ -88,6 +88,8 @@ GLuint CRenderer::setProgram(GLuint Program)
     m_Program = Program;
     glUseProgram(m_Program);
     setModelTransform(glm::mat4(1.0f));
+    setProgramUniform("MissilePos", m_LightPos);
+    setProgramUniform("MissileColor", m_LightClr);
     CHECK_GL_ERROR();
     
     return OldProgram;

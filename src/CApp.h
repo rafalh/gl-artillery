@@ -5,6 +5,7 @@
 
 class CRenderer;
 class CSceneMgr;
+class CCannon;
 
 class CApp: public CFpsCounter::IObserver
 {
@@ -18,6 +19,11 @@ class CApp: public CFpsCounter::IObserver
         CRenderer *m_pRenderer;
         CSceneMgr *m_pSceneMgr;
         CFpsCounter *m_pFpsCounter;
+        CCannon *m_pCannon;
+        float m_StateChangeTime;
+        enum {IDLE, AIMING, PAUSE_BEFORE_FIRE, FIRE} m_State;
+        
+        void updateAnimation();
 };
 
 #endif // CAPP_H

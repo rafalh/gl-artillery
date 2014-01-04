@@ -8,6 +8,10 @@ class CSceneNode
         virtual ~CSceneNode();
         virtual void render() = 0;
         
+        virtual void animate()
+        {
+        }
+        
         virtual bool isTransparent() const
         {
             return false;
