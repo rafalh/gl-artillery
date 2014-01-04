@@ -34,8 +34,9 @@ CApp::CApp():
     m_pSceneMgr->setSkybox(new CSkybox("textures/nightsky_%s.png", m_pRenderer));
     m_pSceneMgr->add(new CHeightMap("textures/hmap.tif", m_pRenderer));
     m_pSceneMgr->add(new CCity(vec3(-45.0f, 11.0f, 45.0f), m_pRenderer));
-    m_pSceneMgr->add(new CShield(vec3(-45.0f, 7.0f, 45.0f), m_pRenderer));
-    m_pCannon = new CCannon(vec3(33.9f, 33.9f, -34.0f), m_pRenderer);
+    m_pShield = new CShield(vec3(-45.0f, 7.0f, 45.0f), m_pRenderer);
+    m_pSceneMgr->add(m_pShield);
+    m_pCannon = new CCannon(vec3(33.9f, 33.9f, -34.0f), m_pRenderer, m_pSceneMgr);
     m_pSceneMgr->add(m_pCannon);
     
     m_pFpsCounter = new CFpsCounter;

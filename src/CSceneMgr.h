@@ -31,6 +31,7 @@ class CSceneMgr
         }
         
         void render();
+        bool testCollision(const glm::vec3 RayBegin, const glm::vec3 RayEnd);
     
     private:
         std::vector<CSceneNode*> m_Nodes;

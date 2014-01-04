@@ -12,6 +12,11 @@ class CSceneNode
         {
         }
         
+        virtual bool testCollision(const glm::vec3 RayBegin, const glm::vec3 RayEnd)
+        {
+            return false;
+        }
+        
         virtual bool isTransparent() const
         {
             return false;

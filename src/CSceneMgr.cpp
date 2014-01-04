@@ -45,3 +45,15 @@ void CSceneMgr::render()
         pNode->render();
     glDepthMask(GL_TRUE);
 }
+
+bool CSceneMgr::testCollision(const glm::vec3 RayBegin, const glm::vec3 RayEnd)
+{
+    bool bCol = false;
+    
+    for(CSceneNode *pNode: m_Nodes)
+        bCol = bCol || pNode->testCollision(RayBegin, RayEnd);
+    for(CSceneNode *pNode: m_TransparentNodes)
+        bCol = bCol || pNode->testCollision(RayBegin, RayEnd);
+    
+    return bCol;
+}

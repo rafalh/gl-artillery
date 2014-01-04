@@ -13,10 +13,9 @@ using namespace glm;
 
 static const float PI = 3.141592f;
 
-CCannon::CCannon(const glm::vec3 &Pos, CRenderer *pRenderer):
+CCannon::CCannon(const glm::vec3 &Pos, CRenderer *pRenderer, CSceneMgr *pSceneMgr):
     m_pRenderer(pRenderer),
     m_pMesh(nullptr), m_pMissile(nullptr),
-    m_ShotTime(0.0f),
     m_AngleX(0), m_AngleY(0),
     m_MissileVisible(false)
 {
@@ -41,9 +40,10 @@ CCannon::CCannon(const glm::vec3 &Pos, CRenderer *pRenderer):
     m_Transform = translate(mat4(), Pos);
     m_Transform = rotate(m_Transform, -45.0f, vec3(0.0f, 1.0f, 0.0f));// * scale(mat4(), vec3(10.0f, 10.0f, 10.0f));
     
-    m_pMissile = new CMissile(m_pRenderer);
+    m_pMissile = new CMissile(m_pRenderer, pSceneMgr);
     
     m_PrevFrameTime = glfwGetTime();
+    m_ShotTime = m_PrevFrameTime - SHOT_TIME;
 }
 
 CCannon::~CCannon()

@@ -8,11 +8,12 @@
 class CRenderer;
 class CGeometryBuilder;
 class CMissile;
+class CSceneMgr;
 
 class CCannon: public CSceneNode
 {
     public:
-        CCannon(const glm::vec3 &Pos, CRenderer *pRenderer);
+        CCannon(const glm::vec3 &Pos, CRenderer *pRenderer, CSceneMgr *pSceneMgr);
         ~CCannon();
         void render();
         void fire();

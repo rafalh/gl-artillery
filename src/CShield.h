@@ -5,6 +5,7 @@
 
 class CRenderer;
 class CMesh;
+class CMissile;
 
 class CShield: public CSceneNode
 {
@@ -12,6 +13,7 @@ class CShield: public CSceneNode
         CShield(const glm::vec3 &Pos, CRenderer *pRenderer);
         ~CShield();
         void render();
+        bool testCollision(const glm::vec3 RayBegin, const glm::vec3 RayEnd);
         
         bool isTransparent() const
         {
@@ -19,9 +21,11 @@ class CShield: public CSceneNode
         }
         
     private:
+        glm::mat4 m_Transform;
+        glm::vec3 m_Pos;
+        float m_Radius;
         CRenderer *m_pRenderer;
         CMesh *m_pMesh;
-        glm::mat4 m_Transform;
 };
 
 #endif // CSHIELD_H
