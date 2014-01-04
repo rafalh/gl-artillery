@@ -3,6 +3,7 @@
 
 #include "CSceneNode.h"
 #include "CMesh.h"
+#include "SMaterial.h"
 
 class CRenderer;
 
@@ -16,6 +17,7 @@ class CSkybox: public CSceneNode
     private:
         CRenderer *m_pRenderer;
         GLuint m_Textures[6];
+        SMaterial m_Material;
         CMesh *m_pMesh;
 };
 

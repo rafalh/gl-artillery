@@ -41,20 +41,20 @@ void CGeometryBuilder::addIcosphere(unsigned n)
 
     m_Vertices.reserve(m_Vertices.size() + 12 * pow(2.5f, n));
 
-    addSphereVertex(glm::normalize(transformVec3(-1.0f,  t,  0.0f)));
-    addSphereVertex(glm::normalize(transformVec3( 1.0f,  t,  0.0f)));
-    addSphereVertex(glm::normalize(transformVec3(-1.0f, -t,  0.0f)));
-    addSphereVertex(glm::normalize(transformVec3( 1.0f, -t,  0.0f)));
+    addSphereVertex(normalize(vec3(-1.0f,  t,  0.0f)));
+    addSphereVertex(normalize(vec3( 1.0f,  t,  0.0f)));
+    addSphereVertex(normalize(vec3(-1.0f, -t,  0.0f)));
+    addSphereVertex(normalize(vec3( 1.0f, -t,  0.0f)));
     
-    addSphereVertex(glm::normalize(transformVec3( 0.0f, -1.0f,  t)));
-    addSphereVertex(glm::normalize(transformVec3( 0.0f,  1.0f,  t)));
-    addSphereVertex(glm::normalize(transformVec3( 0.0f, -1.0f, -t)));
-    addSphereVertex(glm::normalize(transformVec3( 0.0f,  1.0f, -t)));
+    addSphereVertex(normalize(vec3( 0.0f, -1.0f,  t)));
+    addSphereVertex(normalize(vec3( 0.0f,  1.0f,  t)));
+    addSphereVertex(normalize(vec3( 0.0f, -1.0f, -t)));
+    addSphereVertex(normalize(vec3( 0.0f,  1.0f, -t)));
     
-    addSphereVertex(glm::normalize(transformVec3( t,  0.0f, -1.0f)));
-    addSphereVertex(glm::normalize(transformVec3( t,  0.0f,  1.0f)));
-    addSphereVertex(glm::normalize(transformVec3(-t,  0.0f, -1.0f)));
-    addSphereVertex(glm::normalize(transformVec3(-t,  0.0f,  1.0f)));
+    addSphereVertex(normalize(vec3( t,  0.0f, -1.0f)));
+    addSphereVertex(normalize(vec3( t,  0.0f,  1.0f)));
+    addSphereVertex(normalize(vec3(-t,  0.0f, -1.0f)));
+    addSphereVertex(normalize(vec3(-t,  0.0f,  1.0f)));
     
     std::vector<unsigned> Indices = {
         // 5 faces around point 0
@@ -116,6 +116,14 @@ void CGeometryBuilder::addIcosphere(unsigned n)
         --n;
     }
     
+    // Transform all sphere vertices
+    for(unsigned i = BaseIdx; i < m_Vertices.size(); ++i)
+    {
+        m_Vertices[i].Pos = transformVec3(m_Vertices[i].Pos);
+        m_Vertices[i].Normal = normalize(m_TransformNormal * m_Vertices[i].Normal);
+    }
+    
+    // Add indices
     for(unsigned Idx: Indices)
     {
         m_Indices.push_back(BaseIdx + Idx);

@@ -4,6 +4,8 @@
 #include "CRenderer.h"
 #include "utils.h"
 
+using namespace glm;
+
 CSkybox::CSkybox(const char *pszFilenamePattern, CRenderer *pRenderer):
     m_pRenderer(pRenderer)
 {
@@ -23,40 +25,40 @@ CSkybox::CSkybox(const char *pszFilenamePattern, CRenderer *pRenderer):
     
     SVertex Vertices[] = {
         // Up
-        {glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
-        {glm::vec3( 1.0f,  1.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f)},
-        {glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f)},
-        {glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f)},
+        {vec3(-1.0f,  1.0f, -1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(1.0f, 1.0f)},
+        {vec3( 1.0f,  1.0f, -1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(0.0f, 1.0f)},
+        {vec3( 1.0f,  1.0f,  1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(0.0f, 0.0f)},
+        {vec3(-1.0f,  1.0f,  1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(1.0f, 0.0f)},
         
         // North
-        {glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f)},
-        {glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f)},
-        {glm::vec3( 1.0f,  1.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
-        {glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f)},
+        {vec3(-1.0f, -1.0f, -1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(0.0f, 0.0f)},
+        {vec3( 1.0f, -1.0f, -1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(1.0f, 0.0f)},
+        {vec3( 1.0f,  1.0f, -1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(1.0f, 1.0f)},
+        {vec3(-1.0f,  1.0f, -1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(0.0f, 1.0f)},
         
         // West
-        {glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f)},
-        {glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
-        {glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f)},
-        {glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f)},
+        {vec3(-1.0f, -1.0f, -1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(1.0f, 0.0f)},
+        {vec3(-1.0f,  1.0f, -1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(1.0f, 1.0f)},
+        {vec3(-1.0f,  1.0f,  1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(0.0f, 1.0f)},
+        {vec3(-1.0f, -1.0f,  1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(0.0f, 0.0f)},
         
         // South
-        {glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f)},
-        {glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
-        {glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f)},
-        {glm::vec3( 1.0f, -1.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f)},
+        {vec3(-1.0f, -1.0f,  1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(1.0f, 0.0f)},
+        {vec3(-1.0f,  1.0f,  1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(1.0f, 1.0f)},
+        {vec3( 1.0f,  1.0f,  1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(0.0f, 1.0f)},
+        {vec3( 1.0f, -1.0f,  1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(0.0f, 0.0f)},
         
         // East
-        {glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f)},
-        {glm::vec3( 1.0f, -1.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f)},
-        {glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
-        {glm::vec3( 1.0f,  1.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f)},
+        {vec3( 1.0f, -1.0f, -1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(0.0f, 0.0f)},
+        {vec3( 1.0f, -1.0f,  1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(1.0f, 0.0f)},
+        {vec3( 1.0f,  1.0f,  1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(1.0f, 1.0f)},
+        {vec3( 1.0f,  1.0f, -1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(0.0f, 1.0f)},
         
         // Down
-        {glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f)},
-        {glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f)},
-        {glm::vec3( 1.0f, -1.0f,  1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
-        {glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f)},
+        {vec3(-1.0f, -1.0f, -1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(0.0f, 0.0f)},
+        {vec3(-1.0f, -1.0f,  1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(1.0f, 0.0f)},
+        {vec3( 1.0f, -1.0f,  1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(1.0f, 1.0f)},
+        {vec3( 1.0f, -1.0f, -1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(0.0f, 1.0f)},
     };
     
     uint16_t Indices[] = {
@@ -83,6 +85,9 @@ CSkybox::CSkybox(const char *pszFilenamePattern, CRenderer *pRenderer):
     m_pMesh = new CMesh;
     m_pMesh->setVertices(Vertices, COUNTOF(Vertices));
     m_pMesh->setIndices(Indices, COUNTOF(Indices));
+    
+    m_Material.AmbientColor = vec3(1.0f, 1.0f, 1.0f);
+    m_Material.DiffuseColor = vec3(0.0f, 0.0f, 0.0f);
 }
 
 CSkybox::~CSkybox()
@@ -92,8 +97,8 @@ CSkybox::~CSkybox()
 
 void CSkybox::render()
 {
-    GLuint OldProgram = m_pRenderer->setProgram(CShadersMgr::getInstance().get("skybox"));
-    m_pRenderer->setModelTransform(glm::mat4(1.0f), true);
+    m_pRenderer->setMaterial(m_Material);
+    m_pRenderer->setModelTransform(mat4(), true);
     
     for(unsigned i = 0; i < 6; ++i)
     {
@@ -102,6 +107,4 @@ void CSkybox::render()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         m_pMesh->render(CMesh::SOffsetSize(i * 6, 6));
     }
-    
-    m_pRenderer->setProgram(OldProgram);
 }

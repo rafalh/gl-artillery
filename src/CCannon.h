@@ -7,6 +7,7 @@
 
 class CRenderer;
 class CGeometryBuilder;
+class CMissile;
 
 class CCannon: public CSceneNode
 {
@@ -19,10 +20,11 @@ class CCannon: public CSceneNode
     private:
         CRenderer *m_pRenderer;
         CMesh *m_pMesh;
-        glm::mat4 m_Transform;
+        CMissile *m_pMissile;
+        glm::mat4 m_Transform, m_BarrelTransform;
         SMaterial m_CannonMaterial;
-        SMaterial m_EnabledRingMaterial;
         SMaterial m_DisabledRingMaterial;
+        SMaterial m_EnabledRingMaterial;
         float m_ShotTime;
         float m_AngleX, m_AngleY;
         const float SHOT_TIME = 2.0f;

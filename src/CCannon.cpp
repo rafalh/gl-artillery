@@ -6,6 +6,7 @@
 #include "CTextureMgr.h"
 #include "SMaterial.h"
 #include "CLogger.h"
+#include "CMissile.h"
 #include "utils.h"
 
 using namespace glm;
@@ -14,7 +15,7 @@ static const float PI = 3.141592f;
 
 CCannon::CCannon(const glm::vec3 &Pos, CRenderer *pRenderer):
     m_pRenderer(pRenderer),
-    m_pMesh(nullptr),
+    m_pMesh(nullptr), m_pMissile(nullptr),
     m_ShotTime(0.0f),
     m_AngleX(0), m_AngleY(0)
 {
@@ -23,10 +24,10 @@ CCannon::CCannon(const glm::vec3 &Pos, CRenderer *pRenderer):
     m_CannonMaterial.SpecularColor = vec3(0.3f, 0.3f, 0.3f);
     m_CannonMaterial.Shininess = 64.0f;
     
-    m_DisabledRingMaterial.AmbientColor = vec3(0.1f, 0.1f, 0.1f);
-    m_DisabledRingMaterial.DiffuseColor = vec3(0.6f, 0.1f, 0.1f);
+    m_DisabledRingMaterial.AmbientColor = vec3(0.2f, 0.0f, 0.0f);
+    m_DisabledRingMaterial.DiffuseColor = vec3(0.3f, 0.0f, 0.0f);
     
-    m_EnabledRingMaterial.AmbientColor = vec3(0.6f, 0.1f, 0.1f);
+    m_EnabledRingMaterial.AmbientColor = vec3(0.6f, 0.0f, 0.0f);
     m_EnabledRingMaterial.DiffuseColor = vec3(0.4f, 0.0f, 0.0f);
     
     CGeometryBuilder Builder;
@@ -43,6 +44,7 @@ CCannon::CCannon(const glm::vec3 &Pos, CRenderer *pRenderer):
 CCannon::~CCannon()
 {
     delete m_pMesh;
+    delete m_pMissile;
 }
 
 void CCannon::render()
@@ -84,7 +86,8 @@ void CCannon::render()
     mat4 RotationY = rotate(mat4(), m_AngleY, RotAxisY);
     RotationY = translate(mat4(), RotPosY) * RotationY * translate(mat4(), -RotPosY);
     
-    m_pRenderer->setModelTransform(BaseTransform * RotationY * RotationX * FrontGunTransform);
+    m_BarrelTransform = BaseTransform * RotationY * RotationX * FrontGunTransform;
+    m_pRenderer->setModelTransform(m_BarrelTransform);
     m_pMesh->render(m_FrontGun);
     
     unsigned ShiningRings = std::min((unsigned)(ShotDelta * 2.0f), m_BarrelRings.size());
@@ -110,6 +113,9 @@ void CCannon::render()
     
     m_pRenderer->setModelTransform(BaseTransform);
     m_pMesh->render(m_CannonBase);
+    
+    if(m_pMissile)
+        m_pMissile->render();
 }
 
 void CCannon::prepareBase(CGeometryBuilder &Builder)
@@ -294,7 +300,7 @@ void CCannon::prepareLauncher(CGeometryBuilder &Builder)
     mat4 Trans2 = translate(mat4(), vec3(0.0f, 0.0f, 6.0f));
     mat4 Scale2 = scale(mat4(), vec3(1.0f, 1.0f, 3.0f));
     Builder.setTransform(Trans2 * Scale2 * Rot);
-    Builder.addTube(0.35f, 0.40f, 20);
+    Builder.addTube(0.35f, 0.50f, 20);
     
     m_FrontGun = Builder.subMesh();
     
@@ -304,7 +310,7 @@ void CCannon::prepareLauncher(CGeometryBuilder &Builder)
     {
         mat4 RingTrans = translate(mat4(), vec3(0.0f, 0.0f, 5.5f + i * 0.3f));
         Builder.setTransform(RingTrans * Rot);
-        Builder.addTorus(0.5f, 0.05f, 20, 20);
+        Builder.addTorus(0.6f, 0.05f, 20, 20);
         m_BarrelRings.push_back(Builder.subMesh());
     }
     Builder.setColor(OldColor);
@@ -313,7 +319,7 @@ void CCannon::prepareLauncher(CGeometryBuilder &Builder)
     mat4 Scale1 = scale(mat4(), vec3(1.0f, 1.0f, 2.0f));
     mat4 Trans1 = translate(mat4(), vec3(0.0f, 0.0f, 1.0f));
     Builder.setTransform(Trans1 * Scale1 * Rot);
-    Builder.addTube(0.35f, 0.6f, 20);
+    Builder.addTube(0.35f, 0.65f, 20);
     
     // Launcher fragment
     CGeometryBuilder LauncherPartBuilder;
@@ -355,4 +361,9 @@ void CCannon::prepareLauncher(CGeometryBuilder &Builder)
 void CCannon::shoot()
 {
     m_ShotTime = glfwGetTime();
+    delete m_pMissile;
+    
+    vec3 StartPos(m_BarrelTransform * vec4(0.0f, 0.0f, 6.0f, 1.0f));
+    vec3 Velocity(mat3(m_BarrelTransform) * vec3(0.0f, 0.0f, 100.0f));
+    m_pMissile = new CMissile(StartPos, Velocity, m_pRenderer);
 }
