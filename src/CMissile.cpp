@@ -16,7 +16,7 @@ CMissile::CMissile(CRenderer *pRenderer, CSceneMgr *pSceneMgr):
     Builder.addIcosphere(2);
     m_pMesh = Builder.createMesh();
     
-    m_Material.AmbientColor = vec3(1.0f, 0.7f, 0.4f);
+    m_Material.AmbientColor = vec3(0.4f, 1.0f, 0.4f);
     m_Material.DiffuseColor = vec3(0.1f, 0.1f, 0.0f);
     
     m_StartTime = glfwGetTime();
@@ -43,7 +43,7 @@ void CMissile::animate()
     }
     
     m_Pos = NewPos;
-    m_pRenderer->setLightColor(vec3(800.0f, 600.0f, 400.0f));
+    m_pRenderer->setLightColor(vec3(400.0f, 800.0f, 400.0f));
     m_pRenderer->setLightPos(m_Pos);
 }
 

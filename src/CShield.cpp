@@ -9,7 +9,7 @@
 using namespace glm;
 
 CShield::CShield(const glm::vec3 &Pos, CRenderer *pRenderer):
-    m_Pos(Pos), m_Radius(16.0f),
+    m_Pos(Pos), m_Radius(16.0f), m_ColTime(0.0f),
     m_pRenderer(pRenderer), m_pMesh(nullptr)
 {
     m_pMesh = new CMesh;
@@ -33,6 +33,8 @@ void CShield::render()
     m_pRenderer->setDoubleSided(true);
     m_pRenderer->setTexture(0);
     m_pRenderer->setProgramUniform("Time", glfwGetTime());
+    m_pRenderer->setProgramUniform("CollisionPos", m_ColPos);
+    m_pRenderer->setProgramUniform("CollisionTime", m_ColTime);
     
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -66,6 +68,11 @@ bool CShield::testCollision(const glm::vec3 RayBegin, const glm::vec3 RayEnd)
 	if(d1 <= 0.0f || d2 <= 0.0f)
 	    return false;
 	
-	bool bCol = std::min(d1, d2) <= 1.0f;
-    return bCol;
+	float d = std::min(d1, d2);
+	if(d > 1.0f)
+	    return false;
+    
+    m_ColPos = RayBegin + d * RayDir;
+    m_ColTime = glfwGetTime();
+    return true;
 }

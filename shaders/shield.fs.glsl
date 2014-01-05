@@ -11,6 +11,8 @@ out vec4 PixelColor;
 // Values that stay constant for the whole rendering
 uniform sampler2D TextureSampler;
 uniform float Time;
+uniform float CollisionTime;
+uniform vec3 CollisionPos;
 
 vec4 mod289(vec4 x)
 {
@@ -138,7 +140,17 @@ float snoise(vec4 v)
 
 void main()
 {
-	float noise = clamp(snoise(vec4(FragmentPos*3.0f, Time)), 0.0f, 1.0f);
+	float noise = clamp(snoise(vec4(FragmentPos*0.4f, Time)), 0.0f, 1.0f);
 	float t = 0.8f + noise * 0.4f;
-	PixelColor = vec4(clamp(t * FragmentColor.rgb, 0.0f, 1.0f), FragmentColor.a);
+	
+	vec3 Color = t * FragmentColor.rgb;
+	float ColDelta = Time - CollisionTime;
+	float ColDist = distance(FragmentPos, CollisionPos);
+	if(ColDist <= 1.5f + ColDelta*3.0f)
+	{
+		float t = 2.0f * (cos(ColDist*2.0f - ColDelta*6.0f) + 1.0f) * 1.0f/(1.0f + ColDelta*16.0f + ColDist/4.0f);
+		Color += t * vec3(0.2f, 1.0f, 0.2f);
+	}
+	
+	PixelColor = vec4(clamp(Color, 0.0f, 1.0f), FragmentColor.a);
 }

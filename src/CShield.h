@@ -22,8 +22,8 @@ class CShield: public CSceneNode
         
     private:
         glm::mat4 m_Transform;
-        glm::vec3 m_Pos;
-        float m_Radius;
+        glm::vec3 m_Pos, m_ColPos;
+        float m_Radius, m_ColTime;
         CRenderer *m_pRenderer;
         CMesh *m_pMesh;
 };

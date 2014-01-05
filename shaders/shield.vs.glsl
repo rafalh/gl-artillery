@@ -8,6 +8,7 @@ layout(location = 3) in uint VertexClr;
 
 // Size of texture used for rendering
 uniform mat4 MVP;
+uniform mat4 ModelMatrix;
 
 // Output data - will be interpolated by Fragment Shader
 out vec3 FragmentPos;
@@ -18,7 +19,7 @@ void main()
 {
 	vec4 v = vec4(VertexPos, 1);
 	gl_Position = MVP * v;
-	FragmentPos = VertexPos;
+	FragmentPos = (ModelMatrix * v).xyz;
 	FragmentUV = VertexUV;
 	FragmentColor.r = ((VertexClr >> 16u) & 0xFFu) / 255.0f;
 	FragmentColor.g = ((VertexClr >> 8u) & 0xFFu) / 255.0f;
