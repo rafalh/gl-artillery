@@ -37,8 +37,7 @@ CCannon::CCannon(const glm::vec3 &Pos, CRenderer *pRenderer, CSceneMgr *pSceneMg
     prepareLauncher(Builder);
     m_pMesh = Builder.createMesh();
     
-    m_Transform = translate(mat4(), Pos);
-    m_Transform = rotate(m_Transform, -45.0f, vec3(0.0f, 1.0f, 0.0f));// * scale(mat4(), vec3(10.0f, 10.0f, 10.0f));
+    m_Transform = translate(mat4(), Pos) * rotate(m_Transform, -45.0f, vec3(0.0f, 1.0f, 0.0f)) * scale(mat4(), vec3(0.5f, 0.5f, 0.5f));
     
     m_pMissile = new CMissile(m_pRenderer, pSceneMgr);
     
@@ -378,7 +377,7 @@ void CCannon::prepareLauncher(CGeometryBuilder &Builder)
 void CCannon::fire()
 {
     vec3 StartPos(m_BarrelTransform * vec4(0.0f, 0.0f, 6.0f, 1.0f));
-    vec3 Velocity(mat3(m_BarrelTransform) * vec3(0.0f, 0.0f, 40.0f));
+    vec3 Velocity(mat3(m_BarrelTransform) * vec3(0.0f, 0.0f, 88.0f));
     m_pMissile->setVelocity(Velocity);
     m_pMissile->start(StartPos);
     m_MissileVisible = true;

@@ -12,7 +12,7 @@ CMissile::CMissile(CRenderer *pRenderer, CSceneMgr *pSceneMgr):
     m_pMesh(nullptr), m_Visible(false)
 {
     CGeometryBuilder Builder;
-    Builder.setTransform(scale(mat4(), vec3(0.4f, 0.4f, 0.4f)));
+    Builder.setTransform(scale(mat4(), vec3(0.3f, 0.3f, 0.3f)));
     Builder.addIcosphere(2);
     m_pMesh = Builder.createMesh();
     
