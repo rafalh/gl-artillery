@@ -57,10 +57,12 @@ void CApp::start()
     // Set main shader program
     m_pRenderer->setProgram(CShadersMgr::getInstance().get("main"));
     
+    m_pCannon->fire();
+    
     while(!m_pRenderer->isClosed())
     {
         // Clear framebuffre
-        m_pRenderer->clear();
+        m_pRenderer->clear(glm::vec3(0.0f, 0.0f, 0.4f));
         
         // Render all objects
         m_pSceneMgr->render();

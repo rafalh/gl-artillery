@@ -32,7 +32,7 @@ void CShield::render()
     m_pRenderer->setModelTransform(m_Transform);
     m_pRenderer->setDoubleSided(true);
     m_pRenderer->setTexture(0);
-    m_pRenderer->setProgramUniform("Time", glfwGetTime());
+    m_pRenderer->setProgramUniform("Time", (float)glfwGetTime());
     m_pRenderer->setProgramUniform("CollisionPos", m_ColPos);
     m_pRenderer->setProgramUniform("CollisionTime", m_ColTime);
     

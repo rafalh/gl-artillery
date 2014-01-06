@@ -67,20 +67,20 @@ float snoise(vec4 v)
                         0.414589803375032, // 3 * G4
                         -0.447213595499958); // -1 + 4 * G4
                         
-// First corner
+	// First corner
     vec4 i = floor(v + dot(v, vec4(F4)));
     vec4 x0 = v - i + dot(i, C.xxxx);
     
-// Other corners
+	// Other corners
 
-// Rank sorting originally contributed by Bill Licea-Kane, AMD (formerly ATI)
+	// Rank sorting originally contributed by Bill Licea-Kane, AMD (formerly ATI)
     vec4 i0;
     vec3 isX = step(x0.yzw, x0.xxx);
     vec3 isYZ = step(x0.zww, x0.yyz);
-// i0.x = dot( isX, vec3( 1.0 ) );
+	// i0.x = dot( isX, vec3( 1.0 ) );
     i0.x = isX.x + isX.y + isX.z;
     i0.yzw = 1.0 - isX;
-// i0.y += dot( isYZ.xy, vec2( 1.0 ) );
+	// i0.y += dot( isYZ.xy, vec2( 1.0 ) );
     i0.y += isYZ.x + isYZ.y;
     i0.zw += 1.0 - isYZ.xy;
     i0.z += isYZ.z;
@@ -101,17 +101,17 @@ float snoise(vec4 v)
     vec4 x3 = x0 - i3 + C.zzzz;
     vec4 x4 = x0 + C.wwww;
     
-// Permutations
+	// Permutations
     i = mod289(i);
     float j0 = permute(permute(permute(permute(i.w) + i.z) + i.y) + i.x);
     vec4 j1 = permute(permute(permute(permute(
-                                          i.w + vec4(i1.w, i2.w, i3.w, 1.0))
-                                      + i.z + vec4(i1.z, i2.z, i3.z, 1.0))
-                              + i.y + vec4(i1.y, i2.y, i3.y, 1.0))
-                      + i.x + vec4(i1.x, i2.x, i3.x, 1.0));
+		i.w + vec4(i1.w, i2.w, i3.w, 1.0)) +
+		i.z + vec4(i1.z, i2.z, i3.z, 1.0)) +
+		i.y + vec4(i1.y, i2.y, i3.y, 1.0)) +
+		i.x + vec4(i1.x, i2.x, i3.x, 1.0));
                       
-// Gradients: 7x7x6 points over a cube, mapped onto a 4-cross polytope
-// 7*7*6 = 294, which is close to the ring size 17*17 = 289.
+	// Gradients: 7x7x6 points over a cube, mapped onto a 4-cross polytope
+	// 7*7*6 = 294, which is close to the ring size 17*17 = 289.
     vec4 ip = vec4(1.0 / 294.0, 1.0 / 49.0, 1.0 / 7.0, 0.0) ;
     
     vec4 p0 = grad4(j0, ip);
@@ -120,7 +120,7 @@ float snoise(vec4 v)
     vec4 p3 = grad4(j1.z, ip);
     vec4 p4 = grad4(j1.w, ip);
     
-// Normalise gradients
+	// Normalise gradients
     vec4 norm = taylorInvSqrt(vec4(dot(p0, p0), dot(p1, p1), dot(p2, p2), dot(p3, p3)));
     p0 *= norm.x;
     p1 *= norm.y;
@@ -128,27 +128,27 @@ float snoise(vec4 v)
     p3 *= norm.w;
     p4 *= taylorInvSqrt(dot(p4, p4));
     
-// Mix contributions from the five corners
+	// Mix contributions from the five corners
     vec3 m0 = max(0.6 - vec3(dot(x0, x0), dot(x1, x1), dot(x2, x2)), 0.0);
     vec2 m1 = max(0.6 - vec2(dot(x3, x3), dot(x4, x4)), 0.0);
     m0 = m0 * m0;
     m1 = m1 * m1;
     return 49.0 * (dot(m0 * m0, vec3(dot(p0, x0), dot(p1, x1), dot(p2, x2)))
-                   + dot(m1 * m1, vec2(dot(p3, x3), dot(p4, x4)))) ;
+                 + dot(m1 * m1, vec2(dot(p3, x3), dot(p4, x4)))) ;
                    
 }
 
 void main()
 {
 	float noise = clamp(snoise(vec4(FragmentPos*0.4f, Time)), 0.0f, 1.0f);
-	float t = 0.8f + noise * 0.4f;
+	float t = 0.4f + noise * 0.2f;
 	
 	vec3 Color = t * FragmentColor.rgb;
 	float ColDelta = Time - CollisionTime;
 	float ColDist = distance(FragmentPos, CollisionPos);
 	if(ColDist <= 1.5f + ColDelta*3.0f)
 	{
-		float t = 2.0f * (cos(ColDist*2.0f - ColDelta*6.0f) + 1.0f) * 1.0f/(1.0f + ColDelta*16.0f + ColDist/4.0f);
+		float t = 2.0f * (cos(ColDist*2.0f - ColDelta*6.0f) + 1.0f) * 1.0f/(1.0f + ColDelta*24.0f + ColDist/4.0f);
 		Color += t * vec3(0.2f, 1.0f, 0.2f);
 	}
 	

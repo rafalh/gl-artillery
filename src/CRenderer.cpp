@@ -208,6 +208,27 @@ void CRenderer::setTexture(GLuint Texture)
     CHECK_GL_ERROR();
 }
 
+void CRenderer::setProgramUniform(const char *pszName, int Value)
+{
+    GLuint Uniform = glGetUniformLocation(m_Program, pszName);
+    glUniform1i(Uniform, Value);
+    CHECK_GL_ERROR();
+}
+
+void CRenderer::setProgramUniform(const char *pszName, float Value)
+{
+    GLuint Uniform = glGetUniformLocation(m_Program, pszName);
+    glUniform1f(Uniform, Value);
+    CHECK_GL_ERROR();
+}
+
+void CRenderer::setProgramUniform(const char *pszName, const glm::vec2 &Value)
+{
+    GLuint Uniform = glGetUniformLocation(m_Program, pszName);
+    glUniform2fv(Uniform, 1, glm::value_ptr(Value));
+    CHECK_GL_ERROR();
+}
+
 void CRenderer::setProgramUniform(const char *pszName, const glm::vec3 &Value)
 {
     GLuint Uniform = glGetUniformLocation(m_Program, pszName);
@@ -222,13 +243,6 @@ void CRenderer::setProgramUniform(const char *pszName, const glm::vec4 &Value)
     CHECK_GL_ERROR();
 }
 
-void CRenderer::setProgramUniform(const char *pszName, float Value)
-{
-    GLuint Uniform = glGetUniformLocation(m_Program, pszName);
-    glUniform1f(Uniform, Value);
-    CHECK_GL_ERROR();
-}
-
 void CRenderer::setDoubleSided(bool DoubleSided)
 {
     if(DoubleSided)
@@ -238,9 +252,10 @@ void CRenderer::setDoubleSided(bool DoubleSided)
     CHECK_GL_ERROR();
 }
 
-void CRenderer::clear()
+void CRenderer::clear(const glm::vec3 &Color)
 {
     // Clear the screen
+    glClearColor(Color.x, Color.y, Color.z, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     CHECK_GL_ERROR();
 }

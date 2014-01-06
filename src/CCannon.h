@@ -43,6 +43,7 @@ class CCannon: public CSceneNode
         const float SHOT_TIME = 2.0f;
         
         CRenderer *m_pRenderer;
+        CSceneMgr *m_pSceneMgr;
         CMesh *m_pMesh;
         CMissile *m_pMissile;
         glm::mat4 m_Transform, m_BarrelTransform;

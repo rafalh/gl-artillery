@@ -20,6 +20,11 @@ class CShield: public CSceneNode
             return true;
         }
         
+        bool isEmissive() const
+        {
+            return true;
+        }
+        
     private:
         glm::mat4 m_Transform;
         glm::vec3 m_Pos, m_ColPos;

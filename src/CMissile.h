@@ -27,6 +27,11 @@ class CMissile: public CSceneNode
         {
             m_Vel = Vel;
         }
+        
+        bool isEmissive() const
+        {
+            return true;
+        }
     
     private:
         CRenderer *m_pRenderer;

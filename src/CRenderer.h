@@ -13,11 +13,10 @@ class CRenderer
         CRenderer(unsigned w, unsigned h);
         virtual ~CRenderer();
         void run();
-        
         void setTitle(const char *pszTitle);
         void setModelTransform(const glm::mat4 &ModelMat, bool bSkybox = false);
         void setTexture(GLuint Texture);
-        void clear();
+        void clear(const glm::vec3 &Color = glm::vec3(0.0f, 0.0f, 0.0f));
         
         void setLightPos(const glm::vec3 &Position)
         {
@@ -72,9 +71,11 @@ class CRenderer
             return m_Program;
         }
         
+        void setProgramUniform(const char *pszName, int Value);
+        void setProgramUniform(const char *pszName, float Value);
+        void setProgramUniform(const char *pszName, const glm::vec2 &Value);
         void setProgramUniform(const char *pszName, const glm::vec3 &Value);
         void setProgramUniform(const char *pszName, const glm::vec4 &Value);
-        void setProgramUniform(const char *pszName, float Value);
         void setInputHandler(CInputHandler *pHandler);
         void setDoubleSided(bool DoubleSided);
         void setMaterial(const SMaterial &Mat);

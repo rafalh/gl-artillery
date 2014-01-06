@@ -2,6 +2,7 @@
 #include "CCannon.h"
 #include "CMesh.h"
 #include "CRenderer.h"
+#include "CSceneMgr.h"
 #include "CGeometryBuilder.h"
 #include "CTextureMgr.h"
 #include "SMaterial.h"
@@ -14,7 +15,7 @@ using namespace glm;
 static const float PI = 3.141592f;
 
 CCannon::CCannon(const glm::vec3 &Pos, CRenderer *pRenderer, CSceneMgr *pSceneMgr):
-    m_pRenderer(pRenderer),
+    m_pRenderer(pRenderer), m_pSceneMgr(pSceneMgr),
     m_pMesh(nullptr), m_pMissile(nullptr),
     m_AngleX(0), m_AngleY(0),
     m_MissileVisible(false)
@@ -39,8 +40,6 @@ CCannon::CCannon(const glm::vec3 &Pos, CRenderer *pRenderer, CSceneMgr *pSceneMg
     
     m_Transform = translate(mat4(), Pos) * rotate(m_Transform, -45.0f, vec3(0.0f, 1.0f, 0.0f)) * scale(mat4(), vec3(0.5f, 0.5f, 0.5f));
     
-    m_pMissile = new CMissile(m_pRenderer, pSceneMgr);
-    
     m_PrevFrameTime = glfwGetTime();
     m_ShotTime = m_PrevFrameTime - SHOT_TIME;
 }
@@ -48,7 +47,6 @@ CCannon::CCannon(const glm::vec3 &Pos, CRenderer *pRenderer, CSceneMgr *pSceneMg
 CCannon::~CCannon()
 {
     delete m_pMesh;
-    delete m_pMissile;
 }
 
 void CCannon::animate()
@@ -63,9 +61,6 @@ void CCannon::animate()
     m_AngleY = m_AngleY + SignY * std::min(fabsf(m_DestAngleY - m_AngleY), ROT_Y_SPEED * dt);
     
     m_PrevFrameTime = glfwGetTime();
-    
-    if(m_MissileVisible)
-        m_pMissile->animate();
 }
 
 void CCannon::render()
@@ -129,9 +124,6 @@ void CCannon::render()
     
     m_pRenderer->setModelTransform(BaseTransform);
     m_pMesh->render(m_CannonBase);
-    
-    if(m_MissileVisible)
-        m_pMissile->render();
 }
 
 void CCannon::prepareBase(CGeometryBuilder &Builder)
@@ -375,12 +367,17 @@ void CCannon::prepareLauncher(CGeometryBuilder &Builder)
 }
 
 void CCannon::fire()
-{
+{ 
+    if(!m_pMissile)
+    {
+        m_pMissile = new CMissile(m_pRenderer, m_pSceneMgr);
+        m_pSceneMgr->add(m_pMissile);
+    }
+    
     vec3 StartPos(m_BarrelTransform * vec4(0.0f, 0.0f, 6.0f, 1.0f));
     vec3 Velocity(mat3(m_BarrelTransform) * vec3(0.0f, 0.0f, 88.0f));
     m_pMissile->setVelocity(Velocity);
     m_pMissile->start(StartPos);
-    m_MissileVisible = true;
     
     m_ShotTime = glfwGetTime();
 }

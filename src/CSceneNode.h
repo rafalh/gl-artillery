@@ -22,6 +22,11 @@ class CSceneNode
             return false;
         }
         
+        virtual bool isEmissive() const
+        {
+            return false;
+        }
+        
     private:
         std::vector<CSceneNode*> m_Children;
 };
