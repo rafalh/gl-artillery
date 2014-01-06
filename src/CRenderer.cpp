@@ -28,6 +28,7 @@ CRenderer::CRenderer(unsigned w, unsigned h):
 	if(!glfwInit())
 	    throw COpenGLException("Failed to initialize GLFW");
 
+    glfwWindowHint(GLFW_SAMPLES, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
