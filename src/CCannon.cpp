@@ -24,6 +24,7 @@ CCannon::CCannon(const glm::vec3 &Pos, CRenderer *pRenderer, CSceneMgr *pSceneMg
     m_CannonMaterial.DiffuseColor = vec3(1.0f, 1.0f, 1.0f);
     m_CannonMaterial.SpecularColor = vec3(0.3f, 0.3f, 0.3f);
     m_CannonMaterial.Shininess = 64.0f;
+    m_CannonMaterial.Texture = CTextureMgr::getInstance().get("textures/cannon.jpg");
     
     m_DisabledRingMaterial.AmbientColor = vec3(0.2f, 0.0f, 0.0f);
     m_DisabledRingMaterial.DiffuseColor = vec3(0.3f, 0.0f, 0.0f);

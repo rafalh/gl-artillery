@@ -112,7 +112,7 @@ void CHeightMap::build()
     m_Material.Texture = CTextureMgr::getInstance().get("textures/desert.jpg");
     m_Material.AmbientColor = vec3(0.2f, 0.2f, 0.2f);
     m_Material.DiffuseColor = vec3(1.0f, 1.0f, 1.0f);
-    m_Material.SpecularColor = vec3(0.0f, 0.0f, 0.0f);
+    m_Material.SpecularColor = vec3(0.1f, 0.1f, 0.1f);
     m_Material.Shininess = 8.0f;
     
     CLogger::getInstance().info("Heightmap %dx%d built in %.2f seconds\n", w, h, glfwGetTime() - StartTime);

@@ -19,10 +19,12 @@ void CGeometryBuilder::addQuad(const glm::vec3 &v1, const glm::vec3 &v2, const g
     vec3 D = transformVec3(v4);
     
     vec3 Normal = normalize(cross(C - B, A - B));
+    float MaxS = distance(A, B);
+    float MaxT = distance(A, D);
     m_Vertices.push_back(SVertex(A, Normal, vec2(0.0f, 0.0f), m_Color));
-    m_Vertices.push_back(SVertex(B, Normal, vec2(1.0f, 0.0f), m_Color));
-    m_Vertices.push_back(SVertex(C, Normal, vec2(1.0f, 1.0f), m_Color));
-    m_Vertices.push_back(SVertex(D, Normal, vec2(0.0f, 1.0f), m_Color));
+    m_Vertices.push_back(SVertex(B, Normal, vec2(MaxS, 0.0f), m_Color));
+    m_Vertices.push_back(SVertex(C, Normal, vec2(MaxS, MaxT), m_Color));
+    m_Vertices.push_back(SVertex(D, Normal, vec2(0.0f, MaxT), m_Color));
     
     m_Indices.push_back(BaseIdx + 0);
     m_Indices.push_back(BaseIdx + 1);

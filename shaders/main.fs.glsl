@@ -28,7 +28,7 @@ void main()
 	
 	// Directional light - moon
 	vec3 MoonDir = normalize(vec3(-1.0f, 1.0f, 1.0f));
-	vec3 MoonColor = vec3(0.8f, 0.8f, 0.8f);
+	vec3 MoonColor = vec3(0.7f, 0.9f, 0.85f);
 	
 	// Eye vector (towards the camera)
 	vec3 EyeDir = normalize(EyePos - FragmentPos);
