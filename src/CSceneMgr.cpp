@@ -88,7 +88,7 @@ void CSceneMgr::buildGlowmap()
         if(!pNode->isEmissive())
             pNode->render();
     }
-    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE);
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
     for(CSceneNode *pNode: m_Nodes)
     {
         if(pNode->isEmissive())
