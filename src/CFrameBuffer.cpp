@@ -11,20 +11,20 @@ CFrameBuffer::CFrameBuffer(int w, int h, bool bDepthBuffer):
 {
     glGenFramebuffers(1, &m_FBO);
     
-    glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);CHECK_GL_ERROR();
+    glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
     //glEnable(GL_TEXTURE_2D);
-    CHECK_GL_ERROR();
     
     glGenTextures(1, &m_ColorTexture);
     glBindTexture(GL_TEXTURE_2D, m_ColorTexture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ColorTexture, 0);
     //GLenum Attachments[] = {GL_COLOR_ATTACHMENT0};
     //glDrawBuffers(1, Attachments);
+    CHECK_GL_ERROR();
     
     if(bDepthBuffer)
     {
