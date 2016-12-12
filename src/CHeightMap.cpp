@@ -90,7 +90,7 @@ void CHeightMap::build()
     delete[] pVertices;
     
     unsigned IndicesCount = (w - 1) * (h - 1) * 2 * 3;
-    uint32_t *pIndices = new uint32_t[IndicesCount];
+	std::uint32_t *pIndices = new std::uint32_t[IndicesCount];
     unsigned i = 0;
     for(int y = 0; y < h - 1; ++y)
         for(int x = 0; x < w - 1; ++x)

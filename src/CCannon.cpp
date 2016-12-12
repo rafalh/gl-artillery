@@ -171,7 +171,7 @@ void CCannon::prepareBase(CGeometryBuilder &Builder)
         { 0.5f,  0.3f, -1.8f},
         { 0.5f,  0.3f, -3.5f},
     };
-    uint16_t SideBaseIdx1[] = {
+    std::uint16_t SideBaseIdx1[] = {
         0, 6, 7,
         0, 1, 6,
         1, 5, 6,
@@ -182,7 +182,7 @@ void CCannon::prepareBase(CGeometryBuilder &Builder)
     
     // Base side - left face
     vec3 SideBasePos2[COUNTOF(SideBasePos1)];
-    uint16_t SideBaseIdx2[COUNTOF(SideBaseIdx1)];
+	std::uint16_t SideBaseIdx2[COUNTOF(SideBaseIdx1)];
     memcpy(SideBasePos2, SideBasePos1, sizeof(SideBasePos1));
     memcpy(SideBaseIdx2, SideBaseIdx1, sizeof(SideBaseIdx1));
     
@@ -314,7 +314,7 @@ void CCannon::prepareLauncher(CGeometryBuilder &Builder)
     m_FrontGun = Builder.subMesh();
     
     // Rings
-    uint32_t OldColor = Builder.setColor(0xFFFFFFFF);
+	std::uint32_t OldColor = Builder.setColor(0xFFFFFFFF);
     for(unsigned i = 0; i < 6; ++i)
     {
         mat4 RingTrans = translate(mat4(), vec3(0.0f, 0.0f, 5.5f + i * 0.3f));

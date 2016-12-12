@@ -342,7 +342,7 @@ void CGeometryBuilder::addPolygon(const glm::vec3 Positions[], unsigned Count)
     }
 }
 
-void CGeometryBuilder::addPolygon(const glm::vec3 Positions[], unsigned VertCount, const uint16_t Indices[], unsigned IndCount)
+void CGeometryBuilder::addPolygon(const glm::vec3 Positions[], unsigned VertCount, const std::uint16_t Indices[], unsigned IndCount)
 {
     unsigned BaseIdx = m_Vertices.size();
     vec3 Pos0 = Positions[Indices[0]];
@@ -362,7 +362,7 @@ void CGeometryBuilder::addPolygon(const glm::vec3 Positions[], unsigned VertCoun
         m_Indices.push_back(BaseIdx + Indices[i]);
 }
 
-void CGeometryBuilder::addVertices(const std::vector<SVertex> &Vertices, const std::vector<uint16_t> &Indices)
+void CGeometryBuilder::addVertices(const std::vector<SVertex> &Vertices, const std::vector<std::uint16_t> &Indices)
 {
     unsigned Offset = m_Vertices.size();
     
@@ -375,7 +375,7 @@ void CGeometryBuilder::addVertices(const std::vector<SVertex> &Vertices, const s
     }
     
     m_Indices.reserve(m_Indices.size() + Indices.size());
-    for(uint16_t Idx: Indices)
+    for(std::uint16_t Idx: Indices)
         m_Indices.push_back(Offset + Idx);
 }
 

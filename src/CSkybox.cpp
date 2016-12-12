@@ -61,7 +61,7 @@ CSkybox::CSkybox(const char *pszFilenamePattern, CRenderer *pRenderer):
         {vec3( 1.0f, -1.0f, -1.0f), vec3(0.0f, 1.0f, 0.0f), vec2(0.0f, 1.0f)},
     };
     
-    uint16_t Indices[] = {
+	std::uint16_t Indices[] = {
         // Up
         0, 1, 2,
         0, 2, 3,
