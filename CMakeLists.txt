@@ -16,7 +16,7 @@ elseif (WIN32)
 endif()
 
 if (UNIX OR MINGW)
-	add_compile_options(-Wall)
+	add_compile_options(-Wall -Wno-sign-compare)
 elseif (MSVC)
 	set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
 		_CRT_SECURE_NO_WARNINGS __func__=__FUNCTION__)
@@ -34,6 +34,8 @@ file(GLOB_RECURSE HEADERS src/*.h)
 
 add_executable(artillery ${SOURCES} ${HEADERS})
 
+find_package(OpenGL REQUIRED)
+
 target_include_directories(artillery PRIVATE
 	src
 	vendor
@@ -42,11 +44,11 @@ target_include_directories(artillery PRIVATE
 	vendor/glew/include
 )
 
-target_link_libraries(artillery freeimage glfw glew)
-if(WIN32)
-	target_link_libraries(artillery gdi32 opengl32)
-elseif(UNIX)
-	target_link_libraries(artillery GL pthread X11 Xxf86vm Xrandr Xi)
+target_link_libraries(artillery freeimage glfw glew ${OPENGL_gl_LIBRARY})
+if(UNIX)
+	find_package(X11 REQUIRED)
+	#target_link_libraries(artillery pthread X11 Xxf86vm Xrandr Xi)
+	target_link_libraries(artillery pthread ${X11_LIBRARIES})
 endif()
 
 set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT artillery)
